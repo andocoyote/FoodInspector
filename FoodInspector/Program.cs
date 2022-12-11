@@ -1,4 +1,4 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -11,12 +11,15 @@ namespace FoodInspector
     {
         static async Task Main()
         {
+            Microsoft.Extensions.Configuration.ConfigurationManager configurationManager = new ConfigurationManager();
             var builder = new HostBuilder();
 
             // The AddConsole method adds console logging to the configuration
             builder.ConfigureLogging((context, b) =>
             {
+                b.SetMinimumLevel(LogLevel.Information);
                 b.AddConsole();
+                b.AddApplicationInsightsWebJobs(o => { o.ConnectionString = configurationManager.GetConnectionString("AzureWebJobsDashboard"); });
             });
 
             // The ConfigureWebJobs extension method initializes the WebJobs host
