@@ -1,5 +1,6 @@
 ﻿using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
+using HttpClientTest.HttpHelpers;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,6 +26,7 @@ namespace FoodInspector
                 services.AddSingleton<IKeyVaultProvider, FoodInspector.KeyVaultProvider.KeyVaultProvider>();
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
                 services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
+                services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
                 services.AddLogging();
             });
 

@@ -1,4 +1,6 @@
 ﻿using FoodInspector.KeyVaultProvider;
+using HttpClientTest.HttpHelpers;
+using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,34 +12,29 @@ namespace FoodInspector.InspectionDataWriter
 {
     public class InspectionDataWriter : IInspectionDataWriter
     {
+        private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
         private readonly IKeyVaultProvider _keyVaultProvider;
-        public ILogger _logger { get; set; }
-        public InspectionDataWriter(IKeyVaultProvider keyVaultProvider, ILoggerFactory loggerFactory)
+        private readonly ILogger _logger;
+
+        public InspectionDataWriter(
+            ICommonServiceLayerProvider commonServiceLayerProvider,
+            IKeyVaultProvider keyVaultProvider,
+            ILoggerFactory loggerFactory)
         {
+            _commonServiceLayerProvider = commonServiceLayerProvider;
+            _keyVaultProvider = keyVaultProvider;
             _logger = loggerFactory.CreateLogger<InspectionDataWriter>();
 
-            _keyVaultProvider = keyVaultProvider;
-
-            try
-            {
-                Initialize().GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation($"[InspectionDataWriter] An exception was caught. Exception: {ex}");
-            }
+            
         }
 
         public async Task UpsertData()
         {
             _logger.LogInformation("Upsert called.");
-        }
 
-        private async Task Initialize()
-        {
-            string apptoken = await _keyVaultProvider.GetAppToken();
+            List<InspectionData> inspectionData = await _commonServiceLayerProvider.GetInspections("", "Redmond", "2022-01-01");
 
-            _logger.LogInformation($"[Initialize] AppToken: {apptoken}");
+            _logger.LogInformation($"{inspectionData.Count} records found.");
         }
     }
 }
