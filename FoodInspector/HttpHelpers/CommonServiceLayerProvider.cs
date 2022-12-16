@@ -36,7 +36,7 @@ namespace HttpClientTest.HttpHelpers
             }
         }
 
-        public async Task<List<InspectionData>> GetInspections(string name, string city, string date)
+        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(string name, string city, string date)
         {
             try
             {
@@ -47,7 +47,7 @@ namespace HttpClientTest.HttpHelpers
                     date);
 
                 // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
-                return await _client.DoGetAsync<List<InspectionData>>(inspectionRequest.Query, null, 3);
+                return await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
             }
             catch (Exception ex)
             {

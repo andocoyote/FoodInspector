@@ -1,0 +1,8 @@
+﻿CREATE PROCEDURE [dbo].[DropTable_InspectionData]
+AS
+BEGIN
+SET NOCOUNT ON
+
+DROP TABLE IF EXISTS InspectionData
+
+END

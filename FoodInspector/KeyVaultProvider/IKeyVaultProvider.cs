@@ -7,5 +7,6 @@
         Task<string> GetTenantID();
         Task<string> GetTokenSecret();
         Task<string> GetAppToken();
+        Task<string> GetKeyVaultSecret(string secretname);
     }
 }

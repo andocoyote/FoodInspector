@@ -50,7 +50,7 @@ namespace FoodInspector.KeyVaultProvider
             return await GetKeyVaultSecret(KeyVaultSecretNames.FoodEstablishmentInspectionDataAppToken);
         }
 
-        private async Task<string> GetKeyVaultSecret(string secretname)
+        public async Task<string> GetKeyVaultSecret(string secretname)
         {
             _logger.LogInformation($"[GetKeyVaultSecret]: Attempting to retrieve secret {secretname}");
 

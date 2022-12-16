@@ -1,7 +1,9 @@
-﻿using FoodInspector.InspectionDataWriter;
+﻿using DotNetCoreSqlDb.Models;
+using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
+using FoodInspector.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +11,9 @@ using Microsoft.Extensions.Logging;
 
 // Creating WebJobs that target .NET
 // https://learn.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started
+
+// Creating loggers from LoggerFactory
+// https://stackoverflow.com/questions/55049683/ilogger-injected-via-constructor-for-http-trigger-functions-with-azure-function
 
 namespace FoodInspector
 {
@@ -22,11 +27,13 @@ namespace FoodInspector
             // Configure the Dependency Injection container
             builder.ConfigureServices((hostContext, services) =>
             {
-                //services.AddSingleton<IJobActivator, WebJobActivator>();
                 services.AddSingleton<IKeyVaultProvider, FoodInspector.KeyVaultProvider.KeyVaultProvider>();
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
                 services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
                 services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
+                services.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
+                services.AddDbContext<FoodInspectorDatabaseContext>(options =>
+                    options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
                 services.AddLogging();
             });
 
@@ -45,11 +52,7 @@ namespace FoodInspector
                 b.AddTimers();
             });
 
-            // https://github.com/Azure/azure-webjobs-sdk/issues/1887
-            // https://blog.tech-fellow.net/2019/09/15/adding-di-package-to-webjobs-running-on-net-core/
-
             var host = builder.Build();
-            System.IServiceProvider Services = host.Services;
 
             using (host)
             {

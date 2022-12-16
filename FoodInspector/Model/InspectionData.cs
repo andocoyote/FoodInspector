@@ -1,4 +1,4 @@
-﻿namespace HttpClientTest.Model
+﻿namespace FoodInspector.Model
 {
     // This models the data retrieved from the inspection API and contains all of the available fields
     public class InspectionData
