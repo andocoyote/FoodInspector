@@ -2,6 +2,6 @@
 {
     public interface IInspectionDataWriter
     {
-        public Task UpsertData();
+        public Task WriteData();
     }
 }

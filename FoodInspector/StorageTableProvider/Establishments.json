@@ -1,0 +1,14 @@
+[
+	{
+		"PartitionKey": "Restaurant",
+		"RowKey": "f306de11-d089-4562-92a2-fd8f771f96d7",
+		"Name": "Amaro",
+		"City": "Bothell"
+	},
+	{
+		"PartitionKey": "Restaurant",
+		"RowKey": "43f35b1d-26e4-47c7-9406-3682b04cb8ae",
+		"Name": "Feast",
+		"City": "Kirkland"
+	}
+]

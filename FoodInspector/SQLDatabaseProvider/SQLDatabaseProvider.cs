@@ -27,9 +27,10 @@ namespace FoodInspector.SQLDatabaseProvider
 
             string connectionstring = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 
-            _logger.LogInformation($"Connection string: {connectionstring}");
+            _logger.LogInformation($"SQLDatabaseProvider connection string: {connectionstring}");
 
-            _SQLConnection = new SqlConnection(connectionstring);
+            //_SQLConnection = new SqlConnection(connectionstring);
+
             //var credential = new Azure.Identity.DefaultAzureCredential();
             //var token = credential.GetToken(new Azure.Core.TokenRequestContext(new[] { "https://database.windows.net/.default" }));
             //_SQLConnection.AccessToken = token.Token;
@@ -37,8 +38,9 @@ namespace FoodInspector.SQLDatabaseProvider
 
         public void WriteRecord(FoodInspector.Model.InspectionData inspectionData)
         {
-            
-            _logger.LogInformation($"Database name: {_SQLConnection.Database}");
+            string connectionstring = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+            _logger.LogInformation($"[WriteRecord] Connection string: {connectionstring}");
+            _logger.LogInformation($"[WriteRecord] Database name: {_SQLConnection.Database}");
 
             _SQLConnection.Open();
 

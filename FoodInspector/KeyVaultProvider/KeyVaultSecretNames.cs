@@ -14,6 +14,7 @@ namespace FoodInspector.KeyVaultProvider
         public static string ServicePrincipalAppIDURI { get; } = "FoodInspector-ServicePrincipal-AppIDURI";
         public static string FoodEstablishmentInspectionDataAppToken { get; } = "AppToken-King-County-Food-Establishment-Inspection-Data";
         public static string stfoodinspectorConnectionString { get; } = "Storage-stfoodinspector-ConnectionString";
+        public static string stfoodinspectorKey { get; } = "Storage-stfoodinspector-Key";
         public static string sqlGeneralStorageUsername { get; } = "SQL-sql-general-storage-Username";
         public static string sqlGeneralStoragePassword { get; } = "SQL-sql-general-storage-Password";
     }

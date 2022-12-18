@@ -1,5 +1,6 @@
 ﻿using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
+using FoodInspector.StorageTableProvider;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -36,24 +37,34 @@ namespace HttpClientTest.HttpHelpers
             }
         }
 
-        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(string name, string city, string date)
+        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(List<EstablishmentsModel> establishmentsModels)
         {
+            string date = "2022-01-01";
+            List<FoodInspector.Model.InspectionData> list = new List<FoodInspector.Model.InspectionData>();
+
             try
             {
-                // Set the parameter values on which to search
-                InspectionDataInvocation inspectionRequest = CreateInspectionRequest(
-                    name,
-                    city,
-                    date);
+                foreach (EstablishmentsModel establishmentsModel in establishmentsModels)
+                {
+                    // Set the parameter values on which to search
+                    InspectionDataInvocation inspectionRequest = CreateInspectionRequest(
+                        establishmentsModel.Name,
+                        establishmentsModel.City,
+                        date);
 
-                // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
-                return await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
+                    // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
+                    List<FoodInspector.Model.InspectionData> results = await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
+
+                    list.AddRange(results);
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to query inspection data for {name} in {city} from {date}. Exception: {ex}");
+                Console.WriteLine($"Failed to query inspection data. Exception: {ex}");
                 throw;
             }
+
+            return list;
         }
 
 

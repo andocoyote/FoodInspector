@@ -11,7 +11,6 @@ namespace FoodInspectorTests
     public class FoodInspectorCoreTests
     {
         private IServiceProvider _services = null;
-        private ILoggerFactory _loggerFactory = null;
 
         [TestInitialize]
         public void TestInitialize()
@@ -27,7 +26,7 @@ namespace FoodInspectorTests
 
             _services = serviceCollection.BuildServiceProvider();
             IConfiguration config = _services.GetRequiredService<IConfiguration>();
-            config.["AZURE_SQL_CONNECTIONSTRING"] = SQLGeneralStorageConnectionString;
+            config["AZURE_SQL_CONNECTIONSTRING"] = SQLGeneralStorageConnectionString;
 
             var configFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var settings = configFile.AppSettings.Settings;
@@ -43,7 +42,7 @@ namespace FoodInspectorTests
             try
             {
                 IInspectionDataWriter inspectionDataWriter = _services.GetRequiredService<IInspectionDataWriter>();
-                inspectionDataWriter.UpsertData();
+                inspectionDataWriter.WriteData();
             }
             catch (Exception ex)
             {

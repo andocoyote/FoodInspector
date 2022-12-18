@@ -1,4 +1,6 @@
-﻿using FoodInspector.InspectionDataWriter;
+﻿using FoodInspector.InspectionDataGatherer;
+using FoodInspector.Model;
+using FoodInspector.StorageTableProvider;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -7,11 +9,11 @@ namespace FoodInspector
     public class Functions
     {
 
-        private readonly IInspectionDataWriter _inspectionDataWriter;
+        private readonly IInspectionDataGatherer _inspectionDataGatherer;
 
-        public Functions(IInspectionDataWriter inspectionDataWriter)
+        public Functions(IInspectionDataGatherer inspectionDataGatherer)
         {
-            _inspectionDataWriter = inspectionDataWriter;
+            _inspectionDataGatherer = inspectionDataGatherer;
         }
 
         public async Task ProcessMessageOnTimer(
@@ -22,11 +24,25 @@ namespace FoodInspector
 
             try
             {
-                await _inspectionDataWriter.UpsertData();
+                List<InspectionData> inspectionDataList = await _inspectionDataGatherer.GatherData();
+
+                logger.LogInformation($"[ProcessMessageOnTimer] inspectionDataList count: {(inspectionDataList?.Count ?? -1)}.");
+
+                if (inspectionDataList != null)
+                {
+                    foreach (InspectionData inspectionData in inspectionDataList)
+                    {
+                        logger.LogInformation(
+                            "[ProcessMessageOnTimer]: " +
+                            $"Name: {inspectionData.Name} " +
+                            $"City: {inspectionData.City} " +
+                            $"City: {inspectionData.Inspection_Result}");
+                    }
+                }
             }
             catch (Exception ex)
             {
-                logger.LogInformation($"[ProcessMessageOnTimer] An exception was caught. Exception: {ex}");
+                logger.LogError($"[ProcessMessageOnTimer] An exception was caught. Exception: {ex}");
             }
 
             logger.LogInformation("[ProcessMessageOnTimer] Processing completed.");

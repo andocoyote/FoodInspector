@@ -1,6 +1,7 @@
 ﻿using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
 using FoodInspector.SQLDatabaseProvider;
+using FoodInspector.StorageTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
             serviceCollection.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
             serviceCollection.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
+            serviceCollection.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
             serviceCollection.AddLogging();
         }
     }
