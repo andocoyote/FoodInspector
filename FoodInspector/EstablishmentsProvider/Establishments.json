@@ -2,7 +2,13 @@
 	{
 		"PartitionKey": "Restaurant",
 		"RowKey": "f306de11-d089-4562-92a2-fd8f771f96d7",
-		"Name": "Amaro",
+		"Name": "Amaro Bistro",
+		"City": "Bothell"
+	},
+	{
+		"PartitionKey": "Restaurant",
+		"RowKey": "f04a6680-5f1d-4548-a1c8-90ec0a0b65f6",
+		"Name": "Bine Beer & food, the",
 		"City": "Bothell"
 	},
 	{

@@ -7,6 +7,7 @@ using Azure.Data.Tables.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FoodInspector.EstablishmentsProvider;
 
 namespace FoodInspector.StorageTableProvider
 {
@@ -19,13 +20,16 @@ namespace FoodInspector.StorageTableProvider
         private TableServiceClient _tableServiceClient = null;
         private TableClient _tableClient = null;
 
+        private readonly IEstablishmentsProvider _establishmentsProvider;
         private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ILogger _logger;
 
         public StorageTableProvider(
+            IEstablishmentsProvider establishmentsProvider,
             IKeyVaultProvider keyVaultProvider,
             ILoggerFactory loggerFactory)
         {
+            _establishmentsProvider = establishmentsProvider;
             _keyVaultProvider = keyVaultProvider;
             _logger = loggerFactory.CreateLogger<StorageTableProvider>();
 
@@ -65,10 +69,7 @@ namespace FoodInspector.StorageTableProvider
         //  write to SQL
         public async Task CreateEstablishmentsSet()
         {
-            string path = Environment.CurrentDirectory + @"\StorageTableProvider\Establishments.json";
-
-            string json = File.ReadAllText(path);
-            List<EstablishmentsModel> establishments = JsonConvert.DeserializeObject<List<EstablishmentsModel>>(json);
+            List<EstablishmentsModel> establishments = _establishmentsProvider.ReadEstablishmentsFile();
 
             foreach (EstablishmentsModel establishment in establishments)
             {
@@ -96,11 +97,14 @@ namespace FoodInspector.StorageTableProvider
         public async Task<List<EstablishmentsModel>> GetEstablishmentsSet()
         {
             List<EstablishmentsModel> establishmentsList = new List<EstablishmentsModel>();
+
+            // https://briancaos.wordpress.com/2022/11/11/c-azure-table-storage-queryasync-paging-and-filtering/
             var establishments = _tableClient.QueryAsync<EstablishmentsModel>(filter: "");
             await foreach (EstablishmentsModel establishment in establishments)
             {
                 establishmentsList.Add(establishment);
             }
+
             return establishmentsList;
         }
     }

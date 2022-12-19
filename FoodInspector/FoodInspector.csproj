@@ -28,7 +28,7 @@
     <None Update="Settings.job">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="StorageTableProvider\Establishments.json">
+    <None Update="EstablishmentsProvider\Establishments.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

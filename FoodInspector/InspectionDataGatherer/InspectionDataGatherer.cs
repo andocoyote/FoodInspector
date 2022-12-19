@@ -1,4 +1,5 @@
-﻿using FoodInspector.KeyVaultProvider;
+﻿using FoodInspector.EstablishmentsProvider;
+using FoodInspector.KeyVaultProvider;
 using FoodInspector.Model;
 using FoodInspector.SQLDatabaseProvider;
 using FoodInspector.StorageTableProvider;

@@ -1,4 +1,5 @@
 ﻿using DotNetCoreSqlDb.Models;
+using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataGatherer;
 using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
@@ -36,6 +37,7 @@ namespace FoodInspector
                 services.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
                 services.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
+                services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
                 services.AddDbContext<FoodInspectorDatabaseContext>(options =>
                     options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
                 services.AddLogging();

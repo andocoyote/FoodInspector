@@ -1,8 +1,10 @@
 using FoodInspector.DependencyInjection;
+using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataWriter;
+using FoodInspector.Model;
+using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Configuration;
 
 namespace FoodInspectorTests
@@ -47,6 +49,48 @@ namespace FoodInspectorTests
             catch (Exception ex)
             {
                 Console.WriteLine($"[TestSQLDatabaseProvider] An exception was caught: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public async Task CallFoodEstablishmentInspectionDataAPI()
+        {
+            try
+            {
+                ICommonServiceLayerProvider commonServiceLayerProvider = _services.GetRequiredService<ICommonServiceLayerProvider>();
+
+                List<InspectionData> inspectionData = await commonServiceLayerProvider.GetInspections("", "Bothell", "2022-01-01");
+
+                Console.WriteLine($"{inspectionData.Count} records found.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[CallFoodEstablishmentInspectionDataAPI] An exception was caught: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public void ReadEstablishmentsFile()
+        {
+            try
+            {
+                IEstablishmentsProvider establishmentsProvider = _services.GetRequiredService<IEstablishmentsProvider>();
+
+                List<EstablishmentsModel> establishments = establishmentsProvider.ReadEstablishmentsFile();
+
+                foreach (EstablishmentsModel establishment in establishments)
+                {
+                    Console.WriteLine(
+                        "[ReadEstablishmentsFile]: " +
+                        $"PartitionKey: {establishment.PartitionKey} " +
+                        $"RowKey: {establishment.RowKey} " +
+                        $"Name: {establishment.Name} " +
+                        $"City: {establishment.City}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ReadEstablishmentsFile] An exception was caught: {ex}");
             }
         }
     }

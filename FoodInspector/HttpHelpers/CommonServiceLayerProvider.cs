@@ -1,6 +1,6 @@
-﻿using FoodInspector.InspectionDataWriter;
+﻿using FoodInspector.EstablishmentsProvider;
+using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
-using FoodInspector.StorageTableProvider;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
 using System;
@@ -67,6 +67,25 @@ namespace HttpClientTest.HttpHelpers
             return list;
         }
 
+        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(string name, string city, string date)
+        {
+            try
+            {
+                // Set the parameter values on which to search
+                InspectionDataInvocation inspectionRequest = CreateInspectionRequest(
+                    name,
+                    city,
+                    date);
+
+                // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
+                return await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to query inspection data for {name} in {city} from {date}. Exception: {ex}");
+                throw;
+            }
+        }
 
         private InspectionDataInvocation CreateInspectionRequest(string name, string city, string date)
         {

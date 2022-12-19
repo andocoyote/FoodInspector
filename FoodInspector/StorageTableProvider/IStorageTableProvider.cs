@@ -1,4 +1,6 @@
-﻿namespace FoodInspector.StorageTableProvider
+﻿using FoodInspector.EstablishmentsProvider;
+
+namespace FoodInspector.StorageTableProvider
 {
     public interface IStorageTableProvider
     {
