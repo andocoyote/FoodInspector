@@ -8,7 +8,8 @@ namespace HttpClientTest.HttpHelpers
 {
     public class HttpHelper
     {
-        public HttpClient _client = new HttpClient();
+        private readonly string _headername = "X-App-Token";
+        private HttpClient _client = new HttpClient();
         private Uri _uri { get; set; } = null;
         private string _app_token { get; set; } = null;
 
@@ -21,25 +22,42 @@ namespace HttpClientTest.HttpHelpers
             _client.BaseAddress = _uri;
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(config.MediaType));
-            _client.DefaultRequestHeaders.Add("X-App-Token", config.AppToken);
+            _client.DefaultRequestHeaders.Add(_headername, config.AppToken);
         }
 
-        public async Task<TOutput> DoGetAsync<TOutput>(string relativeUri, WebHeaderCollection customHeaders = null, int retryCount = 1)
+        public async Task<TOutput> DoGetAsync<TOutput>(
+            string relativeUri,
+            WebHeaderCollection customHeaders = null,
+            int retryCount = 1)
         {
+            // Make the API call
             HttpResponseMessage response = await GetServerResponseMessageAsync(relativeUri, customHeaders, retryCount);
-            return await GetResponseObjectAsync<TOutput>(response).ConfigureAwait(false);
+            
+            // Parse the result
+            TOutput result = await GetResponseObjectAsync<TOutput>(response).ConfigureAwait(false);
+
+            return result;
         }
 
-        protected async virtual Task<HttpResponseMessage> GetServerResponseMessageAsync(string relativeUri, WebHeaderCollection customHeaders, int retryCount)
+        protected async virtual Task<HttpResponseMessage> GetServerResponseMessageAsync(
+            string relativeUri,
+            WebHeaderCollection customHeaders,
+            int retryCount)
         {
-            // Call HttpClient.SendAsync(...) with retry and return the HttpResponseMessage which contains the status code and data
-            return await PerformHttpClientActionAsync(
+            // Call HttpClient.SendAsync(...) with retry and return the HttpResponseMessage
+            // which contains the status code and data
+            HttpResponseMessage response = await PerformHttpClientActionAsync(
                 taskAction: async () => await _client.SendAsync(CreateRequestMessage(HttpMethod.Get, relativeUri, (object)null, customHeaders)).ConfigureAwait(false),
                 customHeaders: customHeaders,
                 retryCount: retryCount).ConfigureAwait(false);
+
+            return response;
         }
 
-        private async Task<HttpResponseMessage> PerformHttpClientActionAsync(Func<Task<HttpResponseMessage>> taskAction, WebHeaderCollection customHeaders, int retryCount)
+        private async Task<HttpResponseMessage> PerformHttpClientActionAsync(
+            Func<Task<HttpResponseMessage>> taskAction,
+            WebHeaderCollection customHeaders,
+            int retryCount)
         {
             HttpResponseMessage response = await
                 Retry.Do(
@@ -105,8 +123,9 @@ namespace HttpClientTest.HttpHelpers
             {
                 if (!request.Headers.TryAddWithoutValidation(key, customHeaders[key]))
                 {
-                    Console.WriteLine($"While calling {nameof(CreateRequestMessage)}, " +
-                                            $"{nameof(HttpHelper)} failed to add the header: '{key}'.");
+                    Console.WriteLine(
+                        $"While calling {nameof(CreateRequestMessage)}, " +
+                        $"{nameof(HttpHelper)} failed to add the header: '{key}'.");
                 }
             });
         }

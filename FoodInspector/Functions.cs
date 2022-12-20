@@ -1,6 +1,5 @@
 ﻿using FoodInspector.InspectionDataGatherer;
 using FoodInspector.Model;
-using FoodInspector.StorageTableProvider;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 

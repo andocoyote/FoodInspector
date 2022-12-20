@@ -7,6 +7,8 @@ namespace FoodInspector.SQLDatabaseProvider
 {
     public class SQLDatabaseProvider : ISQLDatabaseProvider
     {
+        public string ConnectionString { get; set; } = string.Empty;
+
         private SqlConnection _SQLConnection;
         private readonly IConfiguration _configuration;
         private readonly ILogger _logger;
@@ -26,6 +28,7 @@ namespace FoodInspector.SQLDatabaseProvider
             // https://blog.novanet.no/passwordless-connectionstring-to-azure-sql-database-using-managed-identity/
 
             string connectionstring = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+            this.ConnectionString = connectionstring;
 
             _logger.LogInformation($"SQLDatabaseProvider connection string: {connectionstring}");
 

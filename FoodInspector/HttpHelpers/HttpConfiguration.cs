@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HttpClientTest.HttpHelpers
+﻿namespace HttpClientTest.HttpHelpers
 {
     // Contains configuration settings for the HttpClient object
     public class HttpConfiguration

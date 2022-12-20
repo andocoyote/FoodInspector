@@ -1,5 +1,4 @@
 ﻿using FoodInspector.EstablishmentsProvider;
-using HttpClientTest.Model;
 
 namespace HttpClientTest.HttpHelpers
 {

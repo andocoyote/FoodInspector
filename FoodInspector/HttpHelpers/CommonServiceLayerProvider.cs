@@ -1,10 +1,8 @@
 ﻿using FoodInspector.EstablishmentsProvider;
-using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
+using FoodInspector.Model;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 
@@ -14,8 +12,10 @@ namespace HttpClientTest.HttpHelpers
     {
         private string _base_uri = "https://data.kingcounty.gov/resource/";
         private string _relative_uri = "f29f-zza5.json";
+        private string _startdate = "2022-01-01";
         private string _app_token = "";
         private HttpHelper _client = null;
+
         private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ILogger _logger;
 
@@ -26,21 +26,22 @@ namespace HttpClientTest.HttpHelpers
             _keyVaultProvider = keyVaultProvider;
             _logger = loggerFactory.CreateLogger<CommonServiceLayerProvider>();
 
-            try
-            {
-                _app_token = _keyVaultProvider.GetAppToken().GetAwaiter().GetResult();
-                _client = new HttpHelper(_base_uri, new HttpConfiguration(_app_token, "application/json"));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogInformation($"[CommonServiceLayerProvider] An exception was caught. Exception: {ex}");
-            }
+            _app_token = _keyVaultProvider.GetAppToken().GetAwaiter().GetResult();
+            _client = new HttpHelper(_base_uri, new HttpConfiguration(_app_token, "application/json"));
         }
 
-        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(List<EstablishmentsModel> establishmentsModels)
+        /// <summary>
+        /// Obtains food inspection data for a set of EstablishmentModels
+        /// </summary>
+        /// <param name="establishmentsModels">The list of EstablishmentModels to query</param>
+        /// <returns>
+        /// A list of InspectionData objects containing the data for each establishment.
+        /// Returns null if an exception occurs.
+        /// Returns an empty list if no data is found.
+        /// </returns>
+        public async Task<List<InspectionData>> GetInspections(List<EstablishmentsModel> establishmentsModels)
         {
-            string date = "2022-01-01";
-            List<FoodInspector.Model.InspectionData> list = new List<FoodInspector.Model.InspectionData>();
+            List<InspectionData> list = new List<InspectionData>();
 
             try
             {
@@ -50,44 +51,62 @@ namespace HttpClientTest.HttpHelpers
                     InspectionDataInvocation inspectionRequest = CreateInspectionRequest(
                         establishmentsModel.Name,
                         establishmentsModel.City,
-                        date);
+                        _startdate);
 
+                    // Call the API to obtain the data
                     // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
-                    List<FoodInspector.Model.InspectionData> results = await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
+                    List<InspectionData> results = await _client.DoGetAsync<List<InspectionData>>(inspectionRequest.Query, null, 3);
 
                     list.AddRange(results);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to query inspection data. Exception: {ex}");
-                throw;
+                Console.WriteLine($"[GetInspections] Failed to query inspection data. Exception: {ex}");
+                list = null;
             }
 
             return list;
         }
 
-        public async Task<List<FoodInspector.Model.InspectionData>> GetInspections(string name, string city, string date)
+        /// <summary>
+        /// Obtains food inspection data for establishments matching the name, city, and startdate
+        /// </summary>
+        /// <param name="name">The name of the establishment for which to query</param>
+        /// <param name="city">The city of the establishment for which to query</param>
+        /// <param name="startdate">The earliest date of the inspection for which to query</param>
+        /// <returns>
+        /// A list of InspectionData objects containing the data for each establishment.
+        /// Returns null if an exception occurs.
+        /// Returns an empty list if no data is found.
+        /// </returns>
+        public async Task<List<InspectionData>> GetInspections(string name, string city, string startdate)
         {
+            List<InspectionData> list = null;
+
             try
             {
                 // Set the parameter values on which to search
                 InspectionDataInvocation inspectionRequest = CreateInspectionRequest(
                     name,
                     city,
-                    date);
+                    startdate);
 
+                // Call the API to obtain the data
                 // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
-                return await _client.DoGetAsync<List<FoodInspector.Model.InspectionData>>(inspectionRequest.Query, null, 3);
+                list = await _client.DoGetAsync<List<InspectionData>>(inspectionRequest.Query, null, 3);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to query inspection data for {name} in {city} from {date}. Exception: {ex}");
-                throw;
+                Console.WriteLine($"[GetInspections] Failed to query inspection data for {name} in {city} from {startdate}. Exception: {ex}");
+                list = null;
             }
+
+            return list;
         }
 
-        private InspectionDataInvocation CreateInspectionRequest(string name, string city, string date)
+        // This method creates the URI used to call the API from the query parameters
+        private InspectionDataInvocation CreateInspectionRequest(string name, string city, string startdate)
         {
             // Format the query URI to contain the complete URI plus search parameters
             UriBuilder builder = new UriBuilder(_base_uri + _relative_uri);
@@ -105,7 +124,7 @@ namespace HttpClientTest.HttpHelpers
             }
 
             // Ex: "city in('KIRKLAND', 'REDMOND') AND inspection_date > 2020-01-01"
-            query["$where"] = "inspection_date > \'" + (!string.IsNullOrEmpty(date) ? date : "2020-01-01") + "T00:00:00.000\'";
+            query["$where"] = "inspection_date > \'" + (!string.IsNullOrEmpty(startdate) ? startdate : "2020-01-01") + "T00:00:00.000\'";
 
             builder.Query = query.ToString();
 
@@ -114,7 +133,7 @@ namespace HttpClientTest.HttpHelpers
             {
                 Name = name,
                 City = city,
-                Inspection_Date = date,
+                Inspection_Date = startdate,
                 Query = builder.ToString()
             };
 

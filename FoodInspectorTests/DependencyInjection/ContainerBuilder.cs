@@ -13,12 +13,12 @@ namespace FoodInspector.DependencyInjection
     {
         public static void ConfigureServices(IServiceCollection serviceCollection)
         {
-            serviceCollection.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Configuration.ConfigurationManager > ();
-            serviceCollection.AddSingleton<IKeyVaultProvider, FoodInspector.KeyVaultProvider.KeyVaultProvider>();
+            serviceCollection.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Configuration.ConfigurationManager>();
+            serviceCollection.AddSingleton<IKeyVaultProvider, KeyVaultProvider.KeyVaultProvider>();
             serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
-            serviceCollection.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
+            serviceCollection.AddSingleton<IInspectionDataWriter, InspectionDataWriter.InspectionDataWriter>();
             serviceCollection.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
-            serviceCollection.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
+            serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider.SQLDatabaseProvider>();
             serviceCollection.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
             serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
             serviceCollection.AddLogging();

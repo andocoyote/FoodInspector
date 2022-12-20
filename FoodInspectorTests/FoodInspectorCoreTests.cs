@@ -2,6 +2,7 @@ using FoodInspector.DependencyInjection;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataWriter;
 using FoodInspector.Model;
+using FoodInspector.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +14,7 @@ namespace FoodInspectorTests
     public class FoodInspectorCoreTests
     {
         private IServiceProvider _services = null;
+        private IConfiguration _configuration;
 
         [TestInitialize]
         public void TestInitialize()
@@ -21,21 +23,29 @@ namespace FoodInspectorTests
             string password = "";
             string SQLGeneralStorageConnectionString = $"Server=tcp:sql-general-storage.database.windows.net,1433;Initial Catalog=sqldb-general-storage;Persist Security Info=False;User ID={username};Password={password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-            
             IServiceCollection serviceCollection = new ServiceCollection();
-
             ContainerBuilder.ConfigureServices(serviceCollection);
 
+            // Add the required connection strings and settings to the global ConfigurationManager
             _services = serviceCollection.BuildServiceProvider();
-            IConfiguration config = _services.GetRequiredService<IConfiguration>();
-            config["AZURE_SQL_CONNECTIONSTRING"] = SQLGeneralStorageConnectionString;
+            _configuration = _services.GetRequiredService<IConfiguration>();
+            _configuration["AZURE_SQL_CONNECTIONSTRING"] = SQLGeneralStorageConnectionString;
+
+            Microsoft.Extensions.Configuration.ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+            
 
             var configFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             var settings = configFile.AppSettings.Settings;
 
-
             configFile.Save(ConfigurationSaveMode.Modified);
             System.Configuration.ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
+        }
+
+        [TestMethod]
+        public void DisplayConfiguration()
+        {
+            string connectionstring = _configuration["AZURE_SQL_CONNECTIONSTRING"];
+            Console.WriteLine($"{connectionstring}");
         }
 
         [TestMethod]
@@ -91,6 +101,52 @@ namespace FoodInspectorTests
             catch (Exception ex)
             {
                 Console.WriteLine($"[ReadEstablishmentsFile] An exception was caught: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public async Task GetFoodEstablishmentInspectionResults()
+        {
+            try
+            {
+                IEstablishmentsProvider establishmentsProvider = _services.GetRequiredService<IEstablishmentsProvider>();
+                ICommonServiceLayerProvider commonServiceLayerProvider = _services.GetRequiredService<ICommonServiceLayerProvider>();
+
+                List<EstablishmentsModel> establishmentsList = establishmentsProvider.ReadEstablishmentsFile();
+                List<InspectionData> inspectionDataList = await commonServiceLayerProvider.GetInspections(establishmentsList);
+
+                Console.WriteLine($"[GetFoodEstablishmentInspectionResults] inspectionDataList count: {(inspectionDataList?.Count ?? -1)}.");
+
+                if (inspectionDataList != null)
+                {
+                    foreach (InspectionData inspectionData in inspectionDataList)
+                    {
+                        Console.WriteLine(
+                            "[GetFoodEstablishmentInspectionResults]: " +
+                            $"\nName: {inspectionData.Name} " +
+                            $"\n\tCity: {inspectionData.City} " +
+                            $"\n\tInspection Date: {inspectionData.Inspection_Date} " +
+                            $"\n\tResult: {inspectionData.Inspection_Result}");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GetFoodEstablishmentInspectionResults] An exception was caught: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public void GetSQLDatabaseProviderConnectionString()
+        {
+            try
+            {
+                ISQLDatabaseProvider sqlDatabaseProvider = _services.GetRequiredService<ISQLDatabaseProvider>();
+                Console.WriteLine($"SqlDatabaseProvider.ConnectionString: {sqlDatabaseProvider.ConnectionString}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[TestSQLDatabaseProvider] An exception was caught: {ex}");
             }
         }
     }

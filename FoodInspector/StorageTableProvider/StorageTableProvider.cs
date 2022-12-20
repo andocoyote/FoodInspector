@@ -1,13 +1,8 @@
-﻿using Azure.Data.Tables;
+﻿using Azure;
+using Azure.Data.Tables;
+using FoodInspector.EstablishmentsProvider;
 using FoodInspector.KeyVaultProvider;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Azure;
-using Azure.Data.Tables.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FoodInspector.EstablishmentsProvider;
 
 namespace FoodInspector.StorageTableProvider
 {
@@ -53,7 +48,7 @@ namespace FoodInspector.StorageTableProvider
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[CreateTableIfNotExistsAsync] Exception caught: {ex}");
+                _logger.LogError($"[CreateTableClientAsync] Exception caught: {ex}");
             }
         }
 
@@ -99,7 +94,8 @@ namespace FoodInspector.StorageTableProvider
             List<EstablishmentsModel> establishmentsList = new List<EstablishmentsModel>();
 
             // https://briancaos.wordpress.com/2022/11/11/c-azure-table-storage-queryasync-paging-and-filtering/
-            var establishments = _tableClient.QueryAsync<EstablishmentsModel>(filter: "");
+            AsyncPageable<EstablishmentsModel> establishments = _tableClient.QueryAsync<EstablishmentsModel>(filter: "");
+
             await foreach (EstablishmentsModel establishment in establishments)
             {
                 establishmentsList.Add(establishment);
