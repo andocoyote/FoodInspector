@@ -58,7 +58,7 @@ namespace FoodInspector
                 b.AddTimers();
             });
 
-            var host = builder.Build();
+            IHost host = builder.Build();
 
             using (host)
             {
