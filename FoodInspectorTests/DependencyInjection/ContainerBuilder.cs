@@ -7,6 +7,7 @@ using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using FoodInspector.ExistingInspectionsTableProvider;
 
 namespace FoodInspector.DependencyInjection
 {
@@ -20,9 +21,10 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<IInspectionDataWriter, InspectionDataWriter.InspectionDataWriter>();
             serviceCollection.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
             serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider.SQLDatabaseProvider>();
-            serviceCollection.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.EstablishmentsTableProvider>();
+            serviceCollection.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
             serviceCollection.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();
+            serviceCollection.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddLogging();
         }
     }

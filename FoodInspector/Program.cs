@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using FoodInspector.ExistingInspectionsTableProvider;
 
 // Creating WebJobs that target .NET
 // https://learn.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started
@@ -36,10 +37,11 @@ namespace FoodInspector
                 services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
                 services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
                 services.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
-                services.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.EstablishmentsTableProvider>();
+                services.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();
+                services.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddDbContext<FoodInspectorDatabaseContext>(options =>
                     options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
                 services.AddLogging();
