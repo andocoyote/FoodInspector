@@ -5,7 +5,7 @@ using FoodInspector.InspectionDataGatherer;
 using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
 using FoodInspector.SQLDatabaseProvider;
-using FoodInspector.StorageTableProvider;
+using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +36,7 @@ namespace FoodInspector
                 services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
                 services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
                 services.AddSingleton<ISQLDatabaseProvider, FoodInspector.SQLDatabaseProvider.SQLDatabaseProvider>();
-                services.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
+                services.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.EstablishmentsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();

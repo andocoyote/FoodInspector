@@ -2,7 +2,7 @@
 using FoodInspector.KeyVaultProvider;
 using FoodInspector.Model;
 using FoodInspector.SQLDatabaseProvider;
-using FoodInspector.StorageTableProvider;
+using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -13,14 +13,14 @@ namespace FoodInspector.InspectionDataGatherer
         private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
         private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ISQLDatabaseProvider _sqlDatabaseProvider;
-        private readonly IStorageTableProvider _storageTableProvider;
+        private readonly IEstablishmentsTableProvider _storageTableProvider;
         private readonly ILogger _logger;
 
         public InspectionDataGatherer(
             ICommonServiceLayerProvider commonServiceLayerProvider,
             IKeyVaultProvider keyVaultProvider,
             ISQLDatabaseProvider sqlDatabaseProvider,
-            IStorageTableProvider storageTableProvider,
+            IEstablishmentsTableProvider storageTableProvider,
             ILoggerFactory loggerFactory)
         {
             _commonServiceLayerProvider = commonServiceLayerProvider;

@@ -4,9 +4,9 @@ using FoodInspector.EstablishmentsProvider;
 using FoodInspector.KeyVaultProvider;
 using Microsoft.Extensions.Logging;
 
-namespace FoodInspector.StorageTableProvider
+namespace FoodInspector.EstablishmentsTableProvider
 {
-    public class StorageTableProvider : IStorageTableProvider
+    public class EstablishmentsTableProvider : IEstablishmentsTableProvider
     {
         private string _tablename = "FoodInspectorEstablishments";
         private string _tableStorageUri = "https://stfoodinspector.table.core.windows.net";
@@ -19,14 +19,14 @@ namespace FoodInspector.StorageTableProvider
         private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ILogger _logger;
 
-        public StorageTableProvider(
+        public EstablishmentsTableProvider(
             IEstablishmentsProvider establishmentsProvider,
             IKeyVaultProvider keyVaultProvider,
             ILoggerFactory loggerFactory)
         {
             _establishmentsProvider = establishmentsProvider;
             _keyVaultProvider = keyVaultProvider;
-            _logger = loggerFactory.CreateLogger<StorageTableProvider>();
+            _logger = loggerFactory.CreateLogger<EstablishmentsTableProvider>();
 
             // Create the table of establishments if it doesn't exist
             this.CreateTableClientAsync().GetAwaiter().GetResult();

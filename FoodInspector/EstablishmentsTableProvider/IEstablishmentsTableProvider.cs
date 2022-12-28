@@ -1,8 +1,8 @@
 ﻿using FoodInspector.EstablishmentsProvider;
 
-namespace FoodInspector.StorageTableProvider
+namespace FoodInspector.EstablishmentsTableProvider
 {
-    public interface IStorageTableProvider
+    public interface IEstablishmentsTableProvider
     {
         Task CreateEstablishmentsSet();
 
