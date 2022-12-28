@@ -1,4 +1,5 @@
 ﻿using DotNetCoreSqlDb.Models;
+using FoodInspector.CosmosDbProvider;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataGatherer;
 using FoodInspector.InspectionDataWriter;
@@ -38,6 +39,7 @@ namespace FoodInspector
                 services.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
+                services.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();
                 services.AddDbContext<FoodInspectorDatabaseContext>(options =>
                     options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
                 services.AddLogging();

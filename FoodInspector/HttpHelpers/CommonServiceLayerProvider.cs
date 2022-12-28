@@ -3,6 +3,7 @@ using FoodInspector.KeyVaultProvider;
 using FoodInspector.Model;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 
@@ -59,6 +60,8 @@ namespace HttpClientTest.HttpHelpers
 
                     list.AddRange(results);
                 }
+
+                AssignViolationRecordIds(list);
             }
             catch (Exception ex)
             {
@@ -95,6 +98,8 @@ namespace HttpClientTest.HttpHelpers
                 // Call the API to obtain the data
                 // The HttpClient does the actual calls to get the data.  CommonServiceLayerProvide just tells HttpClient what to do
                 list = await _client.DoGetAsync<List<InspectionData>>(inspectionRequest.Query, null, 3);
+
+                AssignViolationRecordIds(list);
             }
             catch (Exception ex)
             {
@@ -138,6 +143,21 @@ namespace HttpClientTest.HttpHelpers
             };
 
             return inspectionDataRequest;
+        }
+
+        private void AssignViolationRecordIds(IEnumerable<InspectionData> list)
+        {
+            // Group all InspectionData entries by Inspection_Serial_Num because each inspection
+            // can result in zero or more violations and we want to keep them grouped together per establishment
+            List<IGrouping<string, InspectionData>> ordered = list.GroupBy(x => x.Inspection_Serial_Num).ToList();
+
+            // Add a zero-based ID to each inspection entry.  If an inspection resulted in multiple
+            // violations, each one will have an ID such as 0, 1, 2, ... , n
+            for (int i = 0; i < ordered.Count(); i++)
+            {
+                int j = 0;
+                ordered[i].ToList().ForEach(x => x.id = (j++).ToString());
+            }
         }
     }
 }

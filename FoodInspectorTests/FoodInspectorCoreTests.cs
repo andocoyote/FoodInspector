@@ -1,3 +1,4 @@
+using FoodInspector.CosmosDbProvider;
 using FoodInspector.DependencyInjection;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataWriter;
@@ -147,6 +148,47 @@ namespace FoodInspectorTests
             catch (Exception ex)
             {
                 Console.WriteLine($"[TestSQLDatabaseProvider] An exception was caught: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public async Task WriteInspectionDataToCosmosDB()
+        {
+            try
+            {
+                IEstablishmentsProvider establishmentsProvider = _services.GetRequiredService<IEstablishmentsProvider>();
+                ICommonServiceLayerProvider commonServiceLayerProvider = _services.GetRequiredService<ICommonServiceLayerProvider>();
+                ICosmosDbProvider cosmosDbProvider = _services.GetRequiredService<ICosmosDbProvider>();
+
+                List<EstablishmentsModel> establishmentsList = establishmentsProvider.ReadEstablishmentsFile();
+                List<InspectionData> inspectionDataList = await commonServiceLayerProvider.GetInspections(establishmentsList);
+
+                Console.WriteLine($"[WriteInspectionDataToCosmosDB] inspectionDataList count: {(inspectionDataList?.Count ?? -1)}.");
+
+                if (inspectionDataList != null)
+                {
+                    foreach (InspectionData inspectionData in inspectionDataList)
+                    {
+                        Console.WriteLine(
+                            "[WriteInspectionDataToCosmosDB]: " +
+                            $"Name: {inspectionData.Name} " +
+                            $"City: {inspectionData.City} " +
+                            $"City: {inspectionData.Inspection_Result}");
+
+                        if (inspectionData != null)
+                        {
+                            await cosmosDbProvider.WriteDocument(inspectionData);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[WriteInspectionDataToCosmosDB]: InspectionData is null.");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[WriteInspectionDataToCosmosDB] An exception was caught. Exception: {ex}");
             }
         }
     }

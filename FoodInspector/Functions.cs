@@ -1,4 +1,5 @@
-﻿using FoodInspector.InspectionDataGatherer;
+﻿using FoodInspector.CosmosDbProvider;
+using FoodInspector.InspectionDataGatherer;
 using FoodInspector.Model;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
@@ -9,10 +10,12 @@ namespace FoodInspector
     {
 
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
+        private readonly ICosmosDbProvider _cosmosDbProvider;
 
-        public Functions(IInspectionDataGatherer inspectionDataGatherer)
+        public Functions(IInspectionDataGatherer inspectionDataGatherer, ICosmosDbProvider cosmosDbProvider)
         {
             _inspectionDataGatherer = inspectionDataGatherer;
+            _cosmosDbProvider= cosmosDbProvider;
         }
 
         public async Task ProcessMessageOnTimer(
@@ -36,6 +39,8 @@ namespace FoodInspector
                             $"Name: {inspectionData.Name} " +
                             $"City: {inspectionData.City} " +
                             $"City: {inspectionData.Inspection_Result}");
+
+                        await _cosmosDbProvider.WriteDocument(inspectionData);
                     }
                 }
             }

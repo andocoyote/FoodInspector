@@ -17,5 +17,6 @@ namespace FoodInspector.KeyVaultProvider
         public static string stfoodinspectorKey { get; } = "Storage-stfoodinspector-Key";
         public static string sqlGeneralStorageUsername { get; } = "SQL-sql-general-storage-Username";
         public static string sqlGeneralStoragePassword { get; } = "SQL-sql-general-storage-Password";
+        public static string cosmosfoodinspectorConnectionString { get; } = "CosmosDB-cosmos-food-inspector-ConnectionString";
     }
 }

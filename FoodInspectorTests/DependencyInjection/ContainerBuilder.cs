@@ -1,4 +1,5 @@
-﻿using FoodInspector.EstablishmentsProvider;
+﻿using FoodInspector.CosmosDbProvider;
+using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataWriter;
 using FoodInspector.KeyVaultProvider;
 using FoodInspector.SQLDatabaseProvider;
@@ -21,6 +22,7 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider.SQLDatabaseProvider>();
             serviceCollection.AddSingleton<IStorageTableProvider, StorageTableProvider.StorageTableProvider>();
             serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
+            serviceCollection.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();
             serviceCollection.AddLogging();
         }
     }
