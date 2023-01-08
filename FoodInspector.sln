@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodInspector", "FoodInspec
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FoodInspectorTests", "FoodInspectorTests\FoodInspectorTests.csproj", "{C6F014F8-8DB4-470E-A127-858ECBDA86AF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InspectionDataEventCreator", "InspectionDataEventStreamCreator\InspectionDataEventCreator.csproj", "{F8265D31-395D-4338-A7C8-1E5363069343}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C6F014F8-8DB4-470E-A127-858ECBDA86AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C6F014F8-8DB4-470E-A127-858ECBDA86AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C6F014F8-8DB4-470E-A127-858ECBDA86AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8265D31-395D-4338-A7C8-1E5363069343}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8265D31-395D-4338-A7C8-1E5363069343}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8265D31-395D-4338-A7C8-1E5363069343}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8265D31-395D-4338-A7C8-1E5363069343}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

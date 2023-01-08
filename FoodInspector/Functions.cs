@@ -26,7 +26,7 @@ namespace FoodInspector
         }
 
         public async Task ProcessMessageOnTimer(
-            [TimerTrigger("0 */15 * * * *", RunOnStartup = true)] TimerInfo timerInfo,
+            [TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo timerInfo,
             ILogger logger)
         {
             logger.LogInformation("[ProcessMessageOnTimer] TimerTrigger fired.");
