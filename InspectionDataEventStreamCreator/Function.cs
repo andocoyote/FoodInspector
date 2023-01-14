@@ -1,11 +1,14 @@
 using InspectionDataEventCreator.Model;
-using Microsoft.Azure.Documents;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
 namespace InspectionDataEventStreamCreator
 {
+    // This Azure Function creates the core event stream from the raw InspectionData added to Cosmos DB by the FoodInspector WebJob.
+    // These core events are written to the event store in Cosmos DB.
+    // The core event stream contains events for a new violation or no violation.
+    // Subsequent Azure Functions are triggered off of the event store change feed to add additional events to Event Grid
     public static class InspectionDataEventCreatorFunction
     {
         [FunctionName("InspectionDataEventCreatorFunction")]
