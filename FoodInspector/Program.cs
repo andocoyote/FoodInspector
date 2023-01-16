@@ -3,7 +3,7 @@ using FoodInspector.CosmosDbProvider;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataGatherer;
 using FoodInspector.InspectionDataWriter;
-using FoodInspector.KeyVaultProvider;
+using CommonFunctionality.KeyVaultProvider;
 using FoodInspector.SQLDatabaseProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
@@ -32,7 +32,7 @@ namespace FoodInspector
             // Configure the Dependency Injection container
             builder.ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<IKeyVaultProvider, FoodInspector.KeyVaultProvider.KeyVaultProvider>();
+                services.AddSingleton<IKeyVaultProvider, CommonFunctionality.KeyVaultProvider.KeyVaultProvider>();
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
                 services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
                 services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();

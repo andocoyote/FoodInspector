@@ -1,5 +1,5 @@
 ﻿using FoodInspector.EstablishmentsProvider;
-using FoodInspector.KeyVaultProvider;
+using CommonFunctionality.KeyVaultProvider;
 using FoodInspector.Model;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;

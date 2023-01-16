@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CommonFunctionality\CommonFunctionality.csproj" />
     <ProjectReference Include="..\FoodInspector\FoodInspector.csproj" />
   </ItemGroup>
 

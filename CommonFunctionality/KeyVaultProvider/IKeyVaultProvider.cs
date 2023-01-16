@@ -1,4 +1,4 @@
-﻿namespace FoodInspector.KeyVaultProvider
+﻿namespace CommonFunctionality.KeyVaultProvider
 {
     public interface IKeyVaultProvider
     {

@@ -1,4 +1,4 @@
-﻿using FoodInspector.KeyVaultProvider;
+﻿using CommonFunctionality.KeyVaultProvider;
 using FoodInspector.Model;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;

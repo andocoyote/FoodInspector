@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FoodInspector.KeyVaultProvider
+﻿namespace CommonFunctionality.KeyVaultProvider
 {
     public static class KeyVaultSecretNames
     {
@@ -18,5 +12,6 @@ namespace FoodInspector.KeyVaultProvider
         public static string sqlGeneralStorageUsername { get; } = "SQL-sql-general-storage-Username";
         public static string sqlGeneralStoragePassword { get; } = "SQL-sql-general-storage-Password";
         public static string cosmosfoodinspectorConnectionString { get; } = "CosmosDB-cosmos-food-inspector-ConnectionString";
+        public static string eventGridTopicInspectionResultsKey { get; } = "EventGridTopic-InspectionResults-Key";
     }
 }

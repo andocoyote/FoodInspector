@@ -2,13 +2,13 @@
 using Azure.Security.KeyVault.Secrets;
 using Microsoft.Extensions.Logging;
 
-namespace FoodInspector.KeyVaultProvider
+namespace CommonFunctionality.KeyVaultProvider
 {
     public class KeyVaultProvider : IKeyVaultProvider
     {
         private readonly string _keyVaultName = "kv-general-key-vault";
         private readonly SecretClient _client = null;
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = null;
 
         public KeyVaultProvider(ILoggerFactory loggerFactory)
         {

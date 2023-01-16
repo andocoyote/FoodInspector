@@ -1,7 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using FoodInspector.EstablishmentsProvider;
-using FoodInspector.KeyVaultProvider;
+using CommonFunctionality.KeyVaultProvider;
 using Microsoft.Extensions.Logging;
 
 namespace FoodInspector.ExistingInspectionsTableProvider
