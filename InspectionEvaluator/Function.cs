@@ -9,10 +9,16 @@ namespace InspectionEvaluator
 {
     public static class InspectionEvaluator
     {
-        [FunctionName("InspectionEvaluator")]
+        /*[FunctionName("InspectionEvaluator")]
         public static void Run([EventGridTrigger]EventGridEvent eventGridEvent, ILogger log)
         {
             log.LogInformation($"[InspectionEvaluator] Event: {eventGridEvent.Data.ToString()}");
+        }*/
+
+        [FunctionName("InspectionEvaluator")]
+        public static void Run([ServiceBusTrigger("newinspectionqueue")]string myQueueItem, ILogger log)
+        {
+            log.LogInformation($"[InspectionEvaluator] Message: {myQueueItem}");
         }
     }
 }
