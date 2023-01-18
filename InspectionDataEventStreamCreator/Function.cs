@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 // Dependency Injection for Azure Functions:
@@ -54,6 +55,15 @@ namespace InspectionDataEventStreamCreator
         {
             log.LogInformation("[InspectionDataEventCreatorFunction] About to process change feed for InspectionData container.");
 
+            // Connect to the EventGridPublisherClient to send events to Event Grid
+            string eventGridEndpoint = "https://inspectionresults.westus3-1.eventgrid.azure.net/api/events";
+            string eventGridAccessKey = await _keyVaultProvider.GetKeyVaultSecret(KeyVaultSecretNames.eventGridTopicInspectionResultsKey);
+
+            EventGridPublisherClient client = new EventGridPublisherClient(
+                new Uri(eventGridEndpoint),
+                new AzureKeyCredential(eventGridAccessKey));
+
+            // Iterate over each document added to Cosmos DB and send an event to Event Grid
             if (input != null && input.Count > 0)
             {
                 log.LogInformation($"[InspectionDataEventCreatorFunction] Number of documents modified: {input.Count}");
@@ -62,28 +72,22 @@ namespace InspectionDataEventStreamCreator
                 {
                     while (enumerator.MoveNext())
                     {
-                        log.LogInformation($"[InspectionDataEventCreatorFunction] Document Id: {enumerator.Current.Id}");
+                        log.LogInformation($"[InspectionDataEventCreatorFunction] Sending event for document ID: {enumerator.Current.Id}");
+
+                        string jsonString = JsonSerializer.Serialize<InspectionData>(enumerator.Current);
+
+                        // Create the event to send to Event Grid
+                        EventGridEvent eventGridEvent = new EventGridEvent(
+                            "NewInspection",
+                            "InspectionData.NewInspection",
+                            "1.0",
+                            jsonString);
+
+                        // Send the event
+                        await client.SendEventAsync(eventGridEvent);
                     }
                 }
             }
-
-            string eventGridEndpoint = "https://inspectionresults.westus3-1.eventgrid.azure.net/api/events";
-            string eventGridAccessKey = await _keyVaultProvider.GetKeyVaultSecret(KeyVaultSecretNames.eventGridTopicInspectionResultsKey);
-
-            log.LogInformation($"[InspectionDataEventCreatorFunction] EventGrid access key: {eventGridAccessKey}");
-
-            EventGridPublisherClient client = new EventGridPublisherClient(
-                new Uri(eventGridEndpoint),
-                new AzureKeyCredential(eventGridAccessKey));
-
-            EventGridEvent eventGridEvent = new EventGridEvent(
-                "ExampleEventSubject",
-                "Example.EventType",
-                "1.0",
-                "This is the event data");
-
-            // Send the event
-            await client.SendEventAsync(eventGridEvent);
 
             log.LogInformation("[InspectionDataEventCreatorFunction] Finished processing change feed for InspectionData container.");
         }
