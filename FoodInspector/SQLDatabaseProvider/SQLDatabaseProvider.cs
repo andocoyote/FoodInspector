@@ -39,7 +39,7 @@ namespace FoodInspector.SQLDatabaseProvider
             //_SQLConnection.AccessToken = token.Token;
         }
 
-        public void WriteRecord(FoodInspector.Model.InspectionData inspectionData)
+        public void WriteRecord(CommonFunctionality.Model.InspectionData inspectionData)
         {
             string connectionstring = _configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
             _logger.LogInformation($"[WriteRecord] Connection string: {connectionstring}");

@@ -1,18 +1,19 @@
-﻿using DotNetCoreSqlDb.Models;
-using FoodInspector.CosmosDbProvider;
+﻿using CommonFunctionality.CosmosDbProvider;
+using CommonFunctionality.KeyVaultProvider;
+using CommonFunctionality.Model;
+using DotNetCoreSqlDb.Models;
 using FoodInspector.EstablishmentsProvider;
+using FoodInspector.EstablishmentsTableProvider;
+using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataGatherer;
 using FoodInspector.InspectionDataWriter;
-using CommonFunctionality.KeyVaultProvider;
 using FoodInspector.SQLDatabaseProvider;
-using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using FoodInspector.ExistingInspectionsTableProvider;
 
 // Creating WebJobs that target .NET
 // https://learn.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started
@@ -40,8 +41,7 @@ namespace FoodInspector
                 services.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
-                //services.AddSingleton<ICosmosDbProvider<FoodInspector.Model.InspectionData>, InspectionDataCosmosDbProvider>();
-                services.AddSingleton<ICosmosDbProviderFactory<FoodInspector.Model.InspectionData>, InspectionDataCosmosDbProviderFactory>();
+                services.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddDbContext<FoodInspectorDatabaseContext>(options =>
                     options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 
-namespace FoodInspector.CosmosDbProvider
+namespace CommonFunctionality.CosmosDbProvider
 {
     public interface ICosmosDbProvider<T> where T : CosmosDbDocument
     {

@@ -1,4 +1,4 @@
-﻿using FoodInspector.Model;
+﻿using CommonFunctionality.Model;
 
 namespace FoodInspector.InspectionDataGatherer
 {

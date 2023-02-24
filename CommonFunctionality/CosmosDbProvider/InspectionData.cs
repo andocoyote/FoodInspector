@@ -1,8 +1,6 @@
-﻿using FoodInspector.CosmosDbProvider;
-using System.Reflection;
-using System.Security.Policy;
+﻿using CommonFunctionality.CosmosDbProvider;
 
-namespace FoodInspector.Model
+namespace CommonFunctionality.Model
 {
     // This models the data retrieved from the inspection API and contains all of the available fields
     public class InspectionData : CosmosDbDocument

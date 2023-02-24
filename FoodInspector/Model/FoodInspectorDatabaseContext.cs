@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommonFunctionality.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace DotNetCoreSqlDb.Models
 {
@@ -9,6 +10,6 @@ namespace DotNetCoreSqlDb.Models
         {
         }
 
-        public DbSet<FoodInspector.Model.InspectionData> Todo { get; set; }
+        public DbSet<InspectionData> Todo { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using CommonFunctionality.KeyVaultProvider;
-using FoodInspector.Model;
+using CommonFunctionality.Model;
 using FoodInspector.SQLDatabaseProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;

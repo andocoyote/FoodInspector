@@ -1,4 +1,4 @@
-﻿using HttpClientTest.Model;
+﻿using CommonFunctionality.Model;
 
 namespace FoodInspector.SQLDatabaseProvider
 {
@@ -6,6 +6,6 @@ namespace FoodInspector.SQLDatabaseProvider
     {
         public string ConnectionString { get; set; }
 
-        void WriteRecord(FoodInspector.Model.InspectionData inspectionData);
+        void WriteRecord(InspectionData inspectionData);
     }
 }

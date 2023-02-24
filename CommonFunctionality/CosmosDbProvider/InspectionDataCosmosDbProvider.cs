@@ -1,9 +1,9 @@
 ﻿using CommonFunctionality.KeyVaultProvider;
-using FoodInspector.Model;
+using CommonFunctionality.Model;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 
-namespace FoodInspector.CosmosDbProvider
+namespace CommonFunctionality.CosmosDbProvider
 {
     public class InspectionDataCosmosDbProvider : CosmosDbProviderBase, ICosmosDbProvider<InspectionData>
     {

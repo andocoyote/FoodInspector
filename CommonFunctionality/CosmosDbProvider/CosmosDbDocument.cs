@@ -1,4 +1,4 @@
-﻿namespace FoodInspector.CosmosDbProvider
+﻿namespace CommonFunctionality.CosmosDbProvider
 {
     public abstract class CosmosDbDocument
     {

@@ -1,8 +1,8 @@
-using FoodInspector.CosmosDbProvider;
+using CommonFunctionality.CosmosDbProvider;
+using CommonFunctionality.Model;
 using FoodInspector.DependencyInjection;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.InspectionDataWriter;
-using FoodInspector.Model;
 using FoodInspector.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Azure.Cosmos;

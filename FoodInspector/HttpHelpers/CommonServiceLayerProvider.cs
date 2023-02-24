@@ -1,9 +1,8 @@
-﻿using FoodInspector.EstablishmentsProvider;
-using CommonFunctionality.KeyVaultProvider;
-using FoodInspector.Model;
+﻿using CommonFunctionality.KeyVaultProvider;
+using CommonFunctionality.Model;
+using FoodInspector.EstablishmentsProvider;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 

@@ -1,10 +1,10 @@
-﻿using CommonFunctionality.KeyVaultProvider;
-using FoodInspector.CosmosDbProvider;
+﻿using CommonFunctionality.CosmosDbProvider;
+using CommonFunctionality.KeyVaultProvider;
+using CommonFunctionality.Model;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataWriter;
-using FoodInspector.Model;
 using FoodInspector.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,7 +24,6 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider.SQLDatabaseProvider>();
             serviceCollection.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
-            //serviceCollection.AddSingleton<ICosmosDbProvider<FoodInspector.Model.InspectionData>, InspectionDataCosmosDbProvider>();
             serviceCollection.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
             serviceCollection.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddLogging();

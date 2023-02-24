@@ -1,8 +1,8 @@
-﻿using FoodInspector.CosmosDbProvider;
+﻿using CommonFunctionality.CosmosDbProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Model;
+using CommonFunctionality.Model;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +17,7 @@ namespace FoodInspector
 
         public Functions(
             IInspectionDataGatherer inspectionDataGatherer,
-            InspectionDataCosmosDbProviderFactory cosmosDbProviderFactory,
+            ICosmosDbProviderFactory<InspectionData> cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider)
         {
             _inspectionDataGatherer = inspectionDataGatherer;

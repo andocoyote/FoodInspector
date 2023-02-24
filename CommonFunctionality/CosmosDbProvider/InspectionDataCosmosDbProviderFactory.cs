@@ -1,11 +1,8 @@
 ﻿using CommonFunctionality.KeyVaultProvider;
-using FoodInspector.EstablishmentsTableProvider;
-using FoodInspector.Model;
-using FoodInspector.SQLDatabaseProvider;
-using HttpClientTest.HttpHelpers;
+using CommonFunctionality.Model;
 using Microsoft.Extensions.Logging;
 
-namespace FoodInspector.CosmosDbProvider
+namespace CommonFunctionality.CosmosDbProvider
 {
     public class InspectionDataCosmosDbProviderFactory : CosmosDbProviderFactory<InspectionData>
     {
