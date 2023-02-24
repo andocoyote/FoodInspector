@@ -1,17 +1,12 @@
-﻿using System.Reflection;
+﻿using FoodInspector.CosmosDbProvider;
+using System.Reflection;
 using System.Security.Policy;
 
 namespace FoodInspector.Model
 {
     // This models the data retrieved from the inspection API and contains all of the available fields
-    public class InspectionData
+    public class InspectionData : CosmosDbDocument
     {
-        // The ID of this violation in the set of violations for an establishment
-        // If there are multiple violations for an establishment during a single inspection,
-        // each violation will be assigned an ID (zero based), e.g. 0, 1, 2, and so on
-        // This field is lower case because that's what Cosmos DB requires
-        public string id { get; set; } = null;
-
         // Name: The name of the establishment
         public string Name { get; set; } = null;
 

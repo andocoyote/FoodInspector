@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InspectionDataEventCreator"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InspectionEvaluator", "InspectionEvaluator\InspectionEvaluator.csproj", "{DD3E7377-F6D6-42AC-9C99-3AC668F517C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommonFunctionality", "CommonFunctionality\CommonFunctionality.csproj", "{E3C3DD35-5982-43F9-A9A9-041397BC1DC3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonFunctionality", "CommonFunctionality\CommonFunctionality.csproj", "{E3C3DD35-5982-43F9-A9A9-041397BC1DC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventStore", "EventStore\EventStore.csproj", "{E0783633-4B0C-4F6F-92A5-29D860E6699F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{E3C3DD35-5982-43F9-A9A9-041397BC1DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3C3DD35-5982-43F9-A9A9-041397BC1DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3C3DD35-5982-43F9-A9A9-041397BC1DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0783633-4B0C-4F6F-92A5-29D860E6699F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0783633-4B0C-4F6F-92A5-29D860E6699F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0783633-4B0C-4F6F-92A5-29D860E6699F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0783633-4B0C-4F6F-92A5-29D860E6699F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

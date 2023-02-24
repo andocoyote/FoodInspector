@@ -5,6 +5,7 @@ using FoodInspector.InspectionDataWriter;
 using FoodInspector.Model;
 using FoodInspector.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
@@ -158,7 +159,9 @@ namespace FoodInspectorTests
             {
                 IEstablishmentsProvider establishmentsProvider = _services.GetRequiredService<IEstablishmentsProvider>();
                 ICommonServiceLayerProvider commonServiceLayerProvider = _services.GetRequiredService<ICommonServiceLayerProvider>();
-                ICosmosDbProvider cosmosDbProvider = _services.GetRequiredService<ICosmosDbProvider>();
+
+                ICosmosDbProviderFactory<InspectionData> factory = _services.GetRequiredService<ICosmosDbProviderFactory<InspectionData>>();
+                ICosmosDbProvider<InspectionData> cosmosDbProvider = factory.CreateProvider();
 
                 List<EstablishmentsModel> establishmentsList = establishmentsProvider.ReadEstablishmentsFile();
                 List<InspectionData> inspectionDataList = await commonServiceLayerProvider.GetInspections(establishmentsList);
@@ -173,7 +176,7 @@ namespace FoodInspectorTests
                             "[WriteInspectionDataToCosmosDB]: " +
                             $"Name: {inspectionData.Name} " +
                             $"City: {inspectionData.City} " +
-                            $"City: {inspectionData.Inspection_Result}");
+                            $"Inspection_Result: {inspectionData.Inspection_Result}");
 
                         if (inspectionData != null)
                         {
@@ -189,6 +192,35 @@ namespace FoodInspectorTests
             catch (Exception ex)
             {
                 Console.WriteLine($"[WriteInspectionDataToCosmosDB] An exception was caught. Exception: {ex}");
+            }
+        }
+
+        [TestMethod]
+        public async Task ReadInspectionDataFromCosmosDB()
+        {
+            try
+            {
+                ICosmosDbProviderFactory<InspectionData> factory = _services.GetRequiredService<ICosmosDbProviderFactory<InspectionData>>();
+                ICosmosDbProvider<InspectionData> cosmosDbProvider = factory.CreateProvider();
+
+                InspectionData inspectionData = await cosmosDbProvider.ReadDocument("0", new PartitionKey("DAJWHFI6N"));
+
+                if (inspectionData != null)
+                {
+                    Console.WriteLine(
+                            "[ReadInspectionDataFromCosmosDB]: " +
+                            $"Name: {inspectionData.Name} " +
+                            $"City: {inspectionData.City} " +
+                            $"Inspection_Result: {inspectionData.Inspection_Result}");
+                }
+                else
+                {
+                    Console.WriteLine("[ReadInspectionDataFromCosmosDB]: InspectionData is null.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ReadInspectionDataFromCosmosDB] An exception was caught. Exception: {ex}");
             }
         }
     }

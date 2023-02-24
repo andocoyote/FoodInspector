@@ -1,9 +1,10 @@
-﻿using FoodInspector.Model;
+﻿using Microsoft.Azure.Cosmos;
 
 namespace FoodInspector.CosmosDbProvider
 {
-    public interface ICosmosDbProvider
+    public interface ICosmosDbProvider<T> where T : CosmosDbDocument
     {
-        Task WriteDocument(InspectionData inspectionData);
+        Task WriteDocument(T document);
+        Task<T> ReadDocument(string id, PartitionKey partitionKey);
     }
 }

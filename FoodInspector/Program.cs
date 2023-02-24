@@ -40,7 +40,8 @@ namespace FoodInspector
                 services.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
-                services.AddSingleton<ICosmosDbProvider, CosmosDbProvider.CosmosDbProvider>();
+                //services.AddSingleton<ICosmosDbProvider<FoodInspector.Model.InspectionData>, InspectionDataCosmosDbProvider>();
+                services.AddSingleton<ICosmosDbProviderFactory<FoodInspector.Model.InspectionData>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddDbContext<FoodInspectorDatabaseContext>(options =>
                     options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));

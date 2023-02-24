@@ -12,16 +12,16 @@ namespace FoodInspector
     {
 
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
-        private readonly ICosmosDbProvider _cosmosDbProvider;
+        private readonly ICosmosDbProvider<InspectionData> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
 
         public Functions(
             IInspectionDataGatherer inspectionDataGatherer,
-            ICosmosDbProvider cosmosDbProvider,
+            InspectionDataCosmosDbProviderFactory cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider)
         {
             _inspectionDataGatherer = inspectionDataGatherer;
-            _cosmosDbProvider = cosmosDbProvider;
+            _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;
         }
 
