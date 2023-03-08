@@ -8,7 +8,6 @@ using HttpClientTest.HttpHelpers;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
 
 namespace FoodInspectorTests
 {
@@ -33,14 +32,9 @@ namespace FoodInspectorTests
             _configuration = _services.GetRequiredService<IConfiguration>();
             _configuration["AZURE_SQL_CONNECTIONSTRING"] = SQLGeneralStorageConnectionString;
 
+            //serviceCollection.AddDbContext<>();
+
             Microsoft.Extensions.Configuration.ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-            
-
-            var configFile = System.Configuration.ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var settings = configFile.AppSettings.Settings;
-
-            configFile.Save(ConfigurationSaveMode.Modified);
-            System.Configuration.ConfigurationManager.RefreshSection(configFile.AppSettings.SectionInformation.Name);
         }
 
         [TestMethod]
