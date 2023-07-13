@@ -17,9 +17,7 @@ namespace CommonFunctionality.CosmosDbProvider
             IOptions<CosmosDbOptions> cosmosDbOptions,
             ILoggerFactory loggerFactory) :base(
                 cosmosDbOptions,
-                loggerFactory,
-                "FoodInspector",
-                "InspectionData")
+                loggerFactory)
         {
         }
 

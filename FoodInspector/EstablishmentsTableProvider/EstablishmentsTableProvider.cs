@@ -9,9 +9,9 @@ namespace FoodInspector.EstablishmentsTableProvider
 {
     public class ExistingInspectionsTableProvider : IEstablishmentsTableProvider
     {
-        private string _tablename = "FoodInspectorEstablishments";
-        private string _tableStorageUri = "https://stfoodinspector.table.core.windows.net";
-        private string _tableStorageAccountName = "stfoodinspector";
+        private string _tablename = string.Empty;
+        private string _tableStorageUri = string.Empty;
+        private string _tableStorageAccountName = string.Empty;
 
         private TableServiceClient _tableServiceClient = null;
         private TableClient _tableClient = null;
@@ -27,6 +27,9 @@ namespace FoodInspector.EstablishmentsTableProvider
         {
             _storageAccountOptions = storageAccountOptions;
             _establishmentsProvider = establishmentsProvider;
+            _tablename = storageAccountOptions.Value.TableName;
+            _tableStorageUri = storageAccountOptions.Value.TableEndpoint;
+            _tableStorageAccountName = storageAccountOptions.Value.TableStorageAccountName;
             _logger = loggerFactory.CreateLogger<ExistingInspectionsTableProvider>();
 
             // Create the table of establishments if it doesn't exist

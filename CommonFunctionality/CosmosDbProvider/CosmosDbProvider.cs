@@ -9,18 +9,16 @@ namespace CommonFunctionality.CosmosDbProvider
     {
         private readonly ILogger _logger;
         private static CosmosClient _client = null;
-        public string Database { get; set; } = null;
-        private string Container { get; set; } = null;
+        private string _database { get; set; } = null;
+        private string _container { get; set; } = null;
 
         public CosmosDbProviderBase(
             IOptions<CosmosDbOptions> cosmosDbOptions,
-            ILoggerFactory loggerFactory,
-            string database,
-            string container)
+            ILoggerFactory loggerFactory)
         {
             _logger = loggerFactory.CreateLogger<CosmosDbProviderBase>();
-            Database = database;
-            Container = container;
+            _database = cosmosDbOptions.Value.Database;
+            _container = cosmosDbOptions.Value.Containers.InspectionData;
 
             // Cosmos DB client is intended to be instantiated once per application and reused
             // Creating the client for use with a Managed Identity
@@ -37,7 +35,7 @@ namespace CommonFunctionality.CosmosDbProvider
         /// <returns></returns>
         protected async Task WriteDocument<T>(T document)
         {
-            await _client.GetContainer(Database, Container).UpsertItemAsync(document);
+            await _client.GetContainer(_database, _container).UpsertItemAsync(document);
         }
 
         /// <summary>
@@ -48,7 +46,7 @@ namespace CommonFunctionality.CosmosDbProvider
         /// <returns>The document read from Cosmos DB</returns>
         protected async Task<T> ReadDocument<T>(string id, PartitionKey partitionKey)
         {
-            T doc = await _client.GetContainer(Database, Container).ReadItemAsync<T>(id, partitionKey);
+            T doc = await _client.GetContainer(_database, _container).ReadItemAsync<T>(id, partitionKey);
 
             return doc;
         }

@@ -11,10 +11,10 @@ namespace HttpClientTest.HttpHelpers
 {
     public class CommonServiceLayerProvider : ICommonServiceLayerProvider
     {
-        private string _base_uri = "https://data.kingcounty.gov/resource/";
-        private string _relative_uri = "f29f-zza5.json";
-        private string _startdate = "2022-01-01";
-        private string _app_token = "";
+        private string _base_uri = string.Empty;
+        private string _relative_uri = string.Empty;
+        private string _app_token = string.Empty;
+        private string _startdate = string.Empty;
         private HttpHelper _client = null;
 
         private readonly IOptions<AppTokenOptions> _appTokendOptions;
@@ -27,7 +27,10 @@ namespace HttpClientTest.HttpHelpers
             _appTokendOptions = appTokendOptions;
             _logger = loggerFactory.CreateLogger<CommonServiceLayerProvider>();
 
+            _base_uri = _appTokendOptions.Value.BaseUri;
+            _relative_uri = _appTokendOptions.Value.RelativeUri;
             _app_token = _appTokendOptions.Value.KingCountyAppToken;
+            _startdate = _appTokendOptions.Value.StartDate;
             _client = new HttpHelper(_base_uri, new HttpConfiguration(_app_token, "application/json"));
         }
 
