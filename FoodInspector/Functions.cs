@@ -1,25 +1,32 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
-using FoodInspector.EstablishmentsTableProvider;
+using CommonFunctionality.Model;
 using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataGatherer;
-using CommonFunctionality.Model;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FoodInspector
 {
     public class Functions
     {
-
+        // https://stackoverflow.com/questions/54155903/azure-webjob-read-appsettings-json-and-inject-configuration-to-timertrigger
+        private readonly IConfiguration _configuration;
+        private readonly IOptions<CosmosDbOptions> _cosmosDbOptions;
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
         private readonly ICosmosDbProvider<InspectionData> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
 
         public Functions(
+            IConfiguration configuration,
+            IOptions<CosmosDbOptions> cosmosDbOptions,
             IInspectionDataGatherer inspectionDataGatherer,
             ICosmosDbProviderFactory<InspectionData> cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider)
         {
+            _configuration = configuration;
+            _cosmosDbOptions = cosmosDbOptions;
             _inspectionDataGatherer = inspectionDataGatherer;
             _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;
@@ -29,10 +36,23 @@ namespace FoodInspector
             [TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo timerInfo,
             ILogger logger)
         {
-            logger.LogInformation("[ProcessMessageOnTimer] TimerTrigger fired.");
-
             try
             {
+                logger.LogInformation("[ProcessMessageOnTimer] TimerTrigger fired.");
+
+                logger.LogInformation($"[ProcessMessageOnTimer] Printing _cosmosDbOptions:");
+                logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.AccountEndpoint:{_cosmosDbOptions.Value.AccountEndpoint}");
+                logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.Database:{_cosmosDbOptions.Value.Database}");
+                logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.Containers.InspectionData:{_cosmosDbOptions.Value.Containers.InspectionData}");
+
+                logger.LogInformation($"[ProcessMessageOnTimer] Printing environment variable AppSettings:");
+                // https://stackoverflow.com/questions/45144771/how-to-receive-data-from-app-settings-azure-webapp-to-my-webjob
+                logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: ASPNETCORE_ENVIRONMENT={Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
+
+                logger.LogInformation($"[ProcessMessageOnTimer] Printing ConfigurationManager AppSettings:");
+                logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: CosmosDb:Containers:InspectionData={_configuration.GetValue<string>("CosmosDb:Containers:InspectionData")}");
+                logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: ASPNETCORE_ENVIRONMENT={_configuration.GetValue<string>("ASPNETCORE_ENVIRONMENTta")}");
+
                 // Query the food inspections API for the latest data
                 List<InspectionData> inspectionDataList = await _inspectionDataGatherer.GatherData();
 

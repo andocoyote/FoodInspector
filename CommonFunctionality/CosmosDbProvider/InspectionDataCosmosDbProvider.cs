@@ -1,7 +1,7 @@
-﻿using CommonFunctionality.KeyVaultProvider;
-using CommonFunctionality.Model;
+﻿using CommonFunctionality.Model;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CommonFunctionality.CosmosDbProvider
 {
@@ -14,13 +14,12 @@ namespace CommonFunctionality.CosmosDbProvider
         //public string id { get; set; } = null;
 
         public InspectionDataCosmosDbProvider(
-            IKeyVaultProvider keyVaultProvider,
+            IOptions<CosmosDbOptions> cosmosDbOptions,
             ILoggerFactory loggerFactory) :base(
-                keyVaultProvider,
+                cosmosDbOptions,
                 loggerFactory,
                 "FoodInspector",
-                "InspectionData",
-                keyVaultProvider.GetKeyVaultSecret(KeyVaultSecretNames.cosmosfoodinspectorConnectionString).GetAwaiter().GetResult())
+                "InspectionData")
         {
         }
 

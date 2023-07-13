@@ -1,8 +1,9 @@
-﻿using CommonFunctionality.KeyVaultProvider;
+﻿using CommonFunctionality.AppToken;
 using CommonFunctionality.Model;
 using FoodInspector.EstablishmentsProvider;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System.Collections.Specialized;
 using System.Web;
 
@@ -16,17 +17,17 @@ namespace HttpClientTest.HttpHelpers
         private string _app_token = "";
         private HttpHelper _client = null;
 
-        private readonly IKeyVaultProvider _keyVaultProvider;
+        private readonly IOptions<AppTokenOptions> _appTokendOptions;
         private readonly ILogger _logger;
 
         public CommonServiceLayerProvider(
-            IKeyVaultProvider keyVaultProvider,
+            IOptions<AppTokenOptions> appTokendOptions,
             ILoggerFactory loggerFactory)
         {
-            _keyVaultProvider = keyVaultProvider;
+            _appTokendOptions = appTokendOptions;
             _logger = loggerFactory.CreateLogger<CommonServiceLayerProvider>();
 
-            _app_token = _keyVaultProvider.GetAppToken().GetAwaiter().GetResult();
+            _app_token = _appTokendOptions.Value.KingCountyAppToken;
             _client = new HttpHelper(_base_uri, new HttpConfiguration(_app_token, "application/json"));
         }
 

@@ -1,5 +1,4 @@
-﻿using CommonFunctionality.KeyVaultProvider;
-using CommonFunctionality.Model;
+﻿using CommonFunctionality.Model;
 using FoodInspector.SQLDatabaseProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
@@ -10,20 +9,17 @@ namespace FoodInspector.InspectionDataWriter
     public class InspectionDataWriter : IInspectionDataWriter
     {
         private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
-        private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ISQLDatabaseProvider _sqlDatabaseProvider;
         private readonly IEstablishmentsTableProvider _storageTableProvider;
         private readonly ILogger _logger;
 
         public InspectionDataWriter(
             ICommonServiceLayerProvider commonServiceLayerProvider,
-            IKeyVaultProvider keyVaultProvider,
             ISQLDatabaseProvider sqlDatabaseProvider,
             IEstablishmentsTableProvider storageTableProvider,
             ILoggerFactory loggerFactory)
         {
             _commonServiceLayerProvider = commonServiceLayerProvider;
-            _keyVaultProvider = keyVaultProvider;
             _sqlDatabaseProvider = sqlDatabaseProvider;
             _storageTableProvider = storageTableProvider;
             _logger = loggerFactory.CreateLogger<InspectionDataWriter>();

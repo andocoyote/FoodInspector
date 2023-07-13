@@ -1,5 +1,4 @@
-﻿using CommonFunctionality.KeyVaultProvider;
-using CommonFunctionality.Model;
+﻿using CommonFunctionality.Model;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.EstablishmentsTableProvider;
 using FoodInspector.SQLDatabaseProvider;
@@ -11,20 +10,17 @@ namespace FoodInspector.InspectionDataGatherer
     public class InspectionDataGatherer : IInspectionDataGatherer
     {
         private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
-        private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ISQLDatabaseProvider _sqlDatabaseProvider;
         private readonly IEstablishmentsTableProvider _storageTableProvider;
         private readonly ILogger _logger;
 
         public InspectionDataGatherer(
             ICommonServiceLayerProvider commonServiceLayerProvider,
-            IKeyVaultProvider keyVaultProvider,
             ISQLDatabaseProvider sqlDatabaseProvider,
             IEstablishmentsTableProvider storageTableProvider,
             ILoggerFactory loggerFactory)
         {
             _commonServiceLayerProvider = commonServiceLayerProvider;
-            _keyVaultProvider = keyVaultProvider;
             _sqlDatabaseProvider = sqlDatabaseProvider;
             _storageTableProvider = storageTableProvider;
             _logger = loggerFactory.CreateLogger<InspectionDataGatherer>();

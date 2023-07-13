@@ -1,8 +1,8 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using FoodInspector.EstablishmentsProvider;
-using CommonFunctionality.KeyVaultProvider;
+using CommonFunctionality.StorageAccount;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace FoodInspector.ExistingInspectionsTableProvider
 {
@@ -15,14 +15,14 @@ namespace FoodInspector.ExistingInspectionsTableProvider
         private TableServiceClient _tableServiceClient = null;
         private TableClient _tableClient = null;
 
-        private readonly IKeyVaultProvider _keyVaultProvider;
+        private readonly IOptions<StorageAccountOptions> _storageAccountOptions;
         private readonly ILogger _logger;
 
         public ExistingInspectionsTableProvider(
-            IKeyVaultProvider keyVaultProvider,
+            IOptions<StorageAccountOptions> storageAccountOptions,
             ILoggerFactory loggerFactory)
         {
-            _keyVaultProvider = keyVaultProvider;
+            _storageAccountOptions = storageAccountOptions;
             _logger = loggerFactory.CreateLogger<ExistingInspectionsTableProvider>();
 
             // Create the table of establishments if it doesn't exist
@@ -33,7 +33,7 @@ namespace FoodInspector.ExistingInspectionsTableProvider
         {
             try
             {
-                string storageKey = await _keyVaultProvider.GetKeyVaultSecret(KeyVaultSecretNames.stfoodinspectorKey);
+                string storageKey = _storageAccountOptions.Value.StorageAccountKey;
 
                 _tableServiceClient = new TableServiceClient(
                     new Uri(_tableStorageUri),

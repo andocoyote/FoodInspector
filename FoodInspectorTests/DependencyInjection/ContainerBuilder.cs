@@ -1,5 +1,4 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.KeyVaultProvider;
 using CommonFunctionality.Model;
 using FoodInspector.EstablishmentsProvider;
 using FoodInspector.EstablishmentsTableProvider;
@@ -17,7 +16,6 @@ namespace FoodInspector.DependencyInjection
         public static void ConfigureServices(IServiceCollection serviceCollection)
         {
             serviceCollection.AddSingleton<Microsoft.Extensions.Configuration.IConfiguration, Microsoft.Extensions.Configuration.ConfigurationManager>();
-            serviceCollection.AddSingleton<IKeyVaultProvider, CommonFunctionality.KeyVaultProvider.KeyVaultProvider>();
             serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
             serviceCollection.AddSingleton<IInspectionDataWriter, InspectionDataWriter.InspectionDataWriter>();
             serviceCollection.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();

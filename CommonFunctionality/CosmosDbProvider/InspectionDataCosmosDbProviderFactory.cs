@@ -1,24 +1,26 @@
-﻿using CommonFunctionality.KeyVaultProvider;
-using CommonFunctionality.Model;
+﻿using CommonFunctionality.Model;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CommonFunctionality.CosmosDbProvider
 {
     public class InspectionDataCosmosDbProviderFactory : CosmosDbProviderFactory<InspectionData>
     {
-        private readonly IKeyVaultProvider _keyVaultProvider;
+        private readonly IOptions<CosmosDbOptions> _cosmosDbOptions;
         private readonly ILoggerFactory _loggerFactory;
 
         public InspectionDataCosmosDbProviderFactory(
-            IKeyVaultProvider keyVaultProvider,
+            IOptions<CosmosDbOptions> cosmosDbOptions,
             ILoggerFactory loggerFactory)
         {
-            _keyVaultProvider = keyVaultProvider;
+            _cosmosDbOptions = cosmosDbOptions;
             _loggerFactory = loggerFactory;
         }
         protected override ICosmosDbProvider<InspectionData> MakeProvider()
         {
-            ICosmosDbProvider<InspectionData> provider = new InspectionDataCosmosDbProvider(_keyVaultProvider, _loggerFactory);
+            ICosmosDbProvider<InspectionData> provider = new InspectionDataCosmosDbProvider(
+                _cosmosDbOptions,
+                _loggerFactory);
 
             return provider;
         }

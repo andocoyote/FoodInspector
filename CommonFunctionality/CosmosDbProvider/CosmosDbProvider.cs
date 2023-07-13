@@ -1,33 +1,33 @@
-﻿using CommonFunctionality.KeyVaultProvider;
+﻿using Azure.Identity;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace CommonFunctionality.CosmosDbProvider
 {
     public class CosmosDbProviderBase
     {
-        private readonly IKeyVaultProvider _keyVaultProvider;
         private readonly ILogger _logger;
         private static CosmosClient _client = null;
         public string Database { get; set; } = null;
         private string Container { get; set; } = null;
 
         public CosmosDbProviderBase(
-            IKeyVaultProvider keyVaultProvider,
+            IOptions<CosmosDbOptions> cosmosDbOptions,
             ILoggerFactory loggerFactory,
             string database,
-            string container,
-            string connectionString)
+            string container)
         {
-            _keyVaultProvider = keyVaultProvider;
             _logger = loggerFactory.CreateLogger<CosmosDbProviderBase>();
             Database = database;
             Container = container;
 
-            string cosmosDbConnectionString = connectionString;
-
             // Cosmos DB client is intended to be instantiated once per application and reused
-            _client = new CosmosClient(cosmosDbConnectionString);
+            // Creating the client for use with a Managed Identity
+            // Requires creation of an RBAC group with Cosmos DB access
+            _client = new CosmosClient(
+                cosmosDbOptions.Value.AccountEndpoint,
+                new DefaultAzureCredential());
         }
 
         /// <summary>
