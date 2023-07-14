@@ -89,11 +89,7 @@ namespace InspectionDataEventStreamCreator
 
             try
             {
-                logger.LogInformation($"[InspectionDataEventCreatorFunction] Printing ConfigurationManager AppSettings:");
-                logger.LogInformation($"[InspectionDataEventCreatorFunction] AppSetting: KeyVault:VaultName={_configuration.GetValue<string>("KeyVault:VaultName")}");
-
-                logger.LogInformation($"[InspectionDataEventCreatorFunction] Printing _eventGridOptions:");
-                logger.LogInformation($"[InspectionDataEventCreatorFunction] _eventGridOptions.Value.InspectionResultsKey={_eventGridOptions.Value.InspectionResultsKey}");
+                DisplayConfiguration(logger);
 
                 // Connect to the EventGridPublisherClient to send events to Event Grid
                 string eventGridEndpoint = "https://inspectionresults.westus3-1.eventgrid.azure.net/api/events";
@@ -135,6 +131,15 @@ namespace InspectionDataEventStreamCreator
             }
 
             logger.LogInformation("[InspectionDataEventCreatorFunction] Finished processing change feed for InspectionData container.");
+        }
+
+        private void DisplayConfiguration(ILogger logger)
+        {
+            logger.LogInformation($"[InspectionDataEventCreatorFunction] Printing App Settings via IOptions classes:");
+            logger.LogInformation($"[InspectionDataEventCreatorFunction] _eventGridOptions.Value.InspectionResultsKey={_eventGridOptions.Value.InspectionResultsKey}");
+
+            logger.LogInformation($"[InspectionDataEventCreatorFunction] Printing App Settings via ConfigurationManager:");
+            logger.LogInformation($"[InspectionDataEventCreatorFunction] AppSetting: KeyVault:VaultName = {_configuration.GetValue<string>("KeyVault:VaultName")}");
         }
     }
 }
