@@ -9,6 +9,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appsettings.test.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.test.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.3" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0" />
@@ -22,6 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CommonFunctionality\CommonFunctionality.csproj" />
+    <ProjectReference Include="..\EventStore\EventStore.csproj" />
     <ProjectReference Include="..\FoodInspector\FoodInspector.csproj" />
   </ItemGroup>
 

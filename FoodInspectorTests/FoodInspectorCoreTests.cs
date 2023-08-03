@@ -25,7 +25,7 @@ namespace FoodInspectorTests
             string SQLGeneralStorageConnectionString = $"Server=tcp:sql-general-storage.database.windows.net,1433;Initial Catalog=sqldb-general-storage;Persist Security Info=False;User ID={username};Password={password};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
             IServiceCollection serviceCollection = new ServiceCollection();
-            ContainerBuilder.ConfigureServices(serviceCollection);
+            ContainerBuilder.ConfigureServices(serviceCollection, _configuration);
 
             // Add the required connection strings and settings to the global ConfigurationManager
             _services = serviceCollection.BuildServiceProvider();
