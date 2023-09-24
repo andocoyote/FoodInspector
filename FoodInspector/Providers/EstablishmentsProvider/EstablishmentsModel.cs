@@ -1,7 +1,7 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 
-namespace FoodInspector.EstablishmentsProvider
+namespace FoodInspector.Providers.EstablishmentsProvider
 {
     // Storage Table model to uniquely identify food establishments by name and city
     public class EstablishmentsModel : ITableEntity

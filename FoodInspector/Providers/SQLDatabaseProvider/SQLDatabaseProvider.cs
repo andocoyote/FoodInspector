@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Data;
 
-namespace FoodInspector.SQLDatabaseProvider
+namespace FoodInspector.Providers.SQLDatabaseProvider
 {
     public class SQLDatabaseProvider : ISQLDatabaseProvider
     {

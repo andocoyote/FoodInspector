@@ -52,8 +52,12 @@
     <None Update="Settings.job">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="EstablishmentsProvider\Establishments.json">
+    <None Update="Providers\EstablishmentsProvider\Establishments.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Events\" />
+    <Folder Include="DomainModels\" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.Model;
-using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataGatherer;
+using FoodInspector.Providers.ExistingInspectionsTableProvider;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;

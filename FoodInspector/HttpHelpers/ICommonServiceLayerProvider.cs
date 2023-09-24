@@ -1,5 +1,5 @@
 ﻿using CommonFunctionality.Model;
-using FoodInspector.EstablishmentsProvider;
+using FoodInspector.Providers.EstablishmentsProvider;
 
 namespace HttpClientTest.HttpHelpers
 {

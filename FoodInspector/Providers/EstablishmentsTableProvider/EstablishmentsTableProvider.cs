@@ -1,11 +1,11 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using CommonFunctionality.StorageAccount;
-using FoodInspector.EstablishmentsProvider;
+using FoodInspector.Providers.EstablishmentsProvider;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FoodInspector.EstablishmentsTableProvider
+namespace FoodInspector.Providers.EstablishmentsTableProvider
 {
     public class ExistingInspectionsTableProvider : IEstablishmentsTableProvider
     {
@@ -33,7 +33,7 @@ namespace FoodInspector.EstablishmentsTableProvider
             _logger = loggerFactory.CreateLogger<ExistingInspectionsTableProvider>();
 
             // Create the table of establishments if it doesn't exist
-            this.CreateTableClientAsync().GetAwaiter().GetResult();
+            CreateTableClientAsync().GetAwaiter().GetResult();
         }
 
         private async Task CreateTableClientAsync()

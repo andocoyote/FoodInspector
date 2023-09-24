@@ -1,4 +1,6 @@
-﻿namespace FoodInspector.ExistingInspectionsTableProvider
+﻿using FoodInspector.Providers.ExistingInspectionsTableProvider;
+
+namespace FoodInspector.Providers.ExistingInspectionsTableProvider
 {
     public interface IExistingInspectionsTableProvider
     {

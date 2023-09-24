@@ -1,15 +1,13 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.EventGrid;
 using CommonFunctionality.Model;
 using EventStore.CosmosDb;
 using EventStore.Domain;
-using FoodInspector.EstablishmentsProvider;
-using FoodInspector.EstablishmentsTableProvider;
-using FoodInspector.ExistingInspectionsTableProvider;
 using FoodInspector.InspectionDataWriter;
-using FoodInspector.SQLDatabaseProvider;
+using FoodInspector.Providers.EstablishmentsProvider;
+using FoodInspector.Providers.EstablishmentsTableProvider;
+using FoodInspector.Providers.ExistingInspectionsTableProvider;
+using FoodInspector.Providers.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
-using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -24,11 +22,11 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
             serviceCollection.AddSingleton<IInspectionDataWriter, InspectionDataWriter.InspectionDataWriter>();
             serviceCollection.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
-            serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider.SQLDatabaseProvider>();
-            serviceCollection.AddSingleton<IEstablishmentsTableProvider, EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
-            serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider.EstablishmentsProvider>();
+            serviceCollection.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider>();
+            serviceCollection.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
+            serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
             serviceCollection.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
-            serviceCollection.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
+            serviceCollection.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddSingleton<ICosmosClient<TestEvent>, CosmosClient<TestEvent>>();
             serviceCollection.AddLogging();
 

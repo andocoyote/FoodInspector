@@ -1,6 +1,6 @@
-﻿using FoodInspector.EstablishmentsProvider;
+﻿using FoodInspector.Providers.EstablishmentsProvider;
 
-namespace FoodInspector.EstablishmentsTableProvider
+namespace FoodInspector.Providers.EstablishmentsTableProvider
 {
     public interface IEstablishmentsTableProvider
     {

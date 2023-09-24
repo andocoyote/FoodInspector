@@ -1,7 +1,7 @@
 ﻿using CommonFunctionality.Model;
-using FoodInspector.EstablishmentsProvider;
-using FoodInspector.EstablishmentsTableProvider;
-using FoodInspector.SQLDatabaseProvider;
+using FoodInspector.Providers.EstablishmentsProvider;
+using FoodInspector.Providers.EstablishmentsTableProvider;
+using FoodInspector.Providers.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Logging;
 

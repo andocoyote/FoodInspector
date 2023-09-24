@@ -1,6 +1,6 @@
 ﻿using CommonFunctionality.Model;
 
-namespace FoodInspector.SQLDatabaseProvider
+namespace FoodInspector.Providers.SQLDatabaseProvider
 {
     public interface ISQLDatabaseProvider
     {

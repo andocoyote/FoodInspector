@@ -4,7 +4,7 @@ using CommonFunctionality.StorageAccount;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FoodInspector.ExistingInspectionsTableProvider
+namespace FoodInspector.Providers.ExistingInspectionsTableProvider
 {
     public class ExistingInspectionsTableProvider : IExistingInspectionsTableProvider
     {

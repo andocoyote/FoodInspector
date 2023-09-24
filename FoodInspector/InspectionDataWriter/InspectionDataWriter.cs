@@ -1,8 +1,8 @@
 ﻿using CommonFunctionality.Model;
-using FoodInspector.SQLDatabaseProvider;
-using FoodInspector.EstablishmentsTableProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Logging;
+using FoodInspector.Providers.EstablishmentsTableProvider;
+using FoodInspector.Providers.SQLDatabaseProvider;
 
 namespace FoodInspector.InspectionDataWriter
 {

@@ -1,6 +1,6 @@
 ﻿using CommonFunctionality.AppToken;
 using CommonFunctionality.Model;
-using FoodInspector.EstablishmentsProvider;
+using FoodInspector.Providers.EstablishmentsProvider;
 using HttpClientTest.Model;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

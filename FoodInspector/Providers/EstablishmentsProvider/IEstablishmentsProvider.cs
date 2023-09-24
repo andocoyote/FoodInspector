@@ -1,4 +1,4 @@
-﻿namespace FoodInspector.EstablishmentsProvider
+﻿namespace FoodInspector.Providers.EstablishmentsProvider
 {
     public interface IEstablishmentsProvider
     {
