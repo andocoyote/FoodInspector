@@ -8,27 +8,27 @@
         private const string NewExpirationDateKey = "NewExpirationDate";
         public DateTime NewExpirationDate()
         {
-            return DateTime.Parse(this.Data[NewExpirationDateKey]);
+            return DateTime.UtcNow;
         }
 
         public UpdateRegistrationExpiration() : base()
         { }
 
         public UpdateRegistrationExpiration(Event<TestEvent> genericEvent) :
-            base(genericEvent.id, genericEvent.StreamId, genericEvent.EventNumber, new Version(genericEvent.Version), genericEvent.Created, nameof(UpdateRegistrationExpiration), genericEvent.OriginatingComponent, new Version(genericEvent.Version))
+            base(genericEvent.id, genericEvent.StreamId, genericEvent.EventNumber, genericEvent.Created, nameof(UpdateRegistrationExpiration), genericEvent.OriginatingComponent, genericEvent.OriginatingComponentVersion)
         {
-            this.Data[NewExpirationDateKey] = genericEvent.Data[NewExpirationDateKey];
+            //this.Data[NewExpirationDateKey] = genericEvent.Data[NewExpirationDateKey];
         }
 
-        public UpdateRegistrationExpiration(Guid id, Guid streamId, long eventNumber, Version version, DateTime created, DateTime newExpirationDate, string originatingComponent, Version originatingComponentVersion) :
-            base(id, streamId, eventNumber, version, created, nameof(UpdateRegistrationExpiration), originatingComponent, originatingComponentVersion)
+        public UpdateRegistrationExpiration(string id, string streamId, long eventNumber, DateTime created, DateTime newExpirationDate, string originatingComponent, string originatingComponentVersion) :
+            base(id, streamId, eventNumber, created, nameof(UpdateRegistrationExpiration), originatingComponent, originatingComponentVersion)
         {
-            this.Data[NewExpirationDateKey] = newExpirationDate.ToString();
+            //this.Data[NewExpirationDateKey] = newExpirationDate.ToString();
         }
 
         public override TestEvent ApplyEvent(TestEvent model)
         {
-            return new TestEvent(model.id, model.Owner, model.Longnumber, DateTime.Parse(this.Data[NewExpirationDateKey]));
+            return new TestEvent(model.id, model.Owner, model.Longnumber, DateTime.UtcNow);
         }
     }
 }

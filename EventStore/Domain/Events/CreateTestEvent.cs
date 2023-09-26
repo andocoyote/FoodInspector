@@ -14,22 +14,23 @@ namespace EventStore.Domain.Events
 
         public string Owner()
         {
-            return this.Data[CreateTestEventOwnerKey];
+            //return this.Data[CreateTestEventOwnerKey];
+            return string.Empty;
         }
 
         public CreateTestEvent() : base()
         { }
 
         public CreateTestEvent(Event<TestEvent> genericEvent) :
-            base(genericEvent.id, genericEvent.StreamId, genericEvent.EventNumber, new Version(genericEvent.Version), genericEvent.Created, nameof(CreateTestEvent), genericEvent.OriginatingComponent, new Version(genericEvent.Version))
+            base(genericEvent.id, genericEvent.StreamId, genericEvent.EventNumber, genericEvent.Created, nameof(CreateTestEvent), genericEvent.OriginatingComponent, genericEvent.OriginatingComponentVersion)
         {
-            this.Data[CreateTestEventOwnerKey] = genericEvent.Data[CreateTestEventOwnerKey];
+            //this.Data[CreateTestEventOwnerKey] = genericEvent.Data[CreateTestEventOwnerKey];
         }
 
-        public CreateTestEvent(Guid id, Guid streamId, long eventNumber, Version version, DateTime created, string newOwner, string originatingComponent, Version originatingComponentVersion) :
-            base(id, streamId, eventNumber, version, created, nameof(CreateTestEvent), originatingComponent, originatingComponentVersion)
+        public CreateTestEvent(string id, string streamId, long eventNumber, DateTime created, string newOwner, string originatingComponent, string originatingComponentVersion) :
+            base(id, streamId, eventNumber, created, nameof(CreateTestEvent), originatingComponent, originatingComponentVersion)
         {
-            this.Data[CreateTestEventOwnerKey] = newOwner;
+            //this.Data[CreateTestEventOwnerKey] = newOwner;
         }
 
         public override TestEvent ApplyEvent(TestEvent model)

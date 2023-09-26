@@ -17,14 +17,13 @@
            Version originatingComponentVersion)
         {
             return new CreateTestEvent(
-                Guid.NewGuid(),
-                eventStream.GetStreamId(),
+                Guid.NewGuid().ToString(),
+                eventStream.GetStreamId().ToString(),
                 eventStream.NextEventNumber(),
-                eventStream.CurrentVersion(),
                 DateTime.UtcNow,
                 newOwner,
                 originatingComponent,
-                originatingComponentVersion);
+                originatingComponentVersion.ToString());
         }
 
         public UpdateRegistrationExpiration BuildUpdateRegistrationExpiration(Event<TestEvent> genericEvent)
@@ -39,13 +38,12 @@
             Version originatingComponentVersion)
         {
             return new UpdateRegistrationExpiration(
-                Guid.NewGuid(),
-                eventStream.GetStreamId(),
+                Guid.NewGuid().ToString(),
+                eventStream.GetStreamId().ToString(),
                 eventStream.NextEventNumber(),
-                eventStream.CurrentVersion(),
                 DateTime.UtcNow, newExpirationDate,
                 originatingComponent,
-                originatingComponentVersion);
+                originatingComponentVersion.ToString());
         }
     }
 }

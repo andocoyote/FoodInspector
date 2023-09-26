@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CommonFunctionality\CommonFunctionality.csproj" />
+    <ProjectReference Include="..\EventStore\EventStore.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Settings.job">
@@ -55,9 +56,5 @@
     <None Update="Providers\EstablishmentsProvider\Establishments.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Events\" />
-    <Folder Include="DomainModels\" />
   </ItemGroup>
 </Project>

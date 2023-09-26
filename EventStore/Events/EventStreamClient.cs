@@ -4,9 +4,10 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using EventStore.Domain;
     using Microsoft.Azure.Cosmos;
 
-    public class EventStreamClient<DomainModel> : IEventStreamClient<DomainModel> where DomainModel : new()
+    public class EventStreamClient<DomainModel> : IEventStreamClient<DomainModel> where DomainModel : IDomainModel, new()
     {
         private Container cosmosContainer;
         private const string streamIdQueryFormat = "SELECT * FROM c WHERE c.StreamId = '{0}'";

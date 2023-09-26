@@ -68,13 +68,11 @@ namespace FoodInspectorTests
             Event<TestEvent> @event = new Event<TestEvent>();
             @event.EventType = "TestEvent";
             @event.EventNumber = 0;
-            @event.Version = "1.0.0.0";
-            @event.id = Guid.NewGuid();
+            @event.id = Guid.NewGuid().ToString();
             @event.OriginatingComponentVersion = "1.0.0.0";
             @event.OriginatingComponent = "EventStoreTests.WriteTestEvent";
             @event.Created = DateTime.Now;
-            @event.StreamId = Guid.NewGuid();
-            @event.Data = dict;
+            @event.StreamId = Guid.NewGuid().ToString();
 
             CreateTestEvent createtestevent = new CreateTestEvent(@event);
 

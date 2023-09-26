@@ -1,8 +1,9 @@
-﻿using EventStore.Events;
+﻿using EventStore.Domain;
+using EventStore.Events;
 
 namespace EventStore.CosmosDb
 {
-    public interface ICosmosClient<DomainModel> where DomainModel : new()
+    public interface ICosmosClient<DomainModel> where DomainModel : IDomainModel
     {
         Task WriteEvent(Event<DomainModel> @event);
     }

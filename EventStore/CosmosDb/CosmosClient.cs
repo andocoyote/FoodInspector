@@ -7,9 +7,11 @@ using Microsoft.Extensions.Options;
 
 namespace EventStore.CosmosDb
 {
-    public class CosmosClient<DomainModel> : ICosmosClient<DomainModel> where DomainModel : new()
+    public class CosmosClient<DomainModel> : ICosmosClient<DomainModel> where DomainModel : IDomainModel
     {
         private Container cosmosContainer;
+
+        public CosmosClient() { }
 
         public CosmosClient(
             IOptions<CosmosClientOptions> options)
