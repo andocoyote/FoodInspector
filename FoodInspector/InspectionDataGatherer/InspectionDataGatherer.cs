@@ -1,7 +1,6 @@
 ﻿using CommonFunctionality.Model;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
-using FoodInspector.Providers.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Logging;
 
@@ -10,18 +9,15 @@ namespace FoodInspector.InspectionDataGatherer
     public class InspectionDataGatherer : IInspectionDataGatherer
     {
         private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
-        private readonly ISQLDatabaseProvider _sqlDatabaseProvider;
         private readonly IEstablishmentsTableProvider _storageTableProvider;
         private readonly ILogger _logger;
 
         public InspectionDataGatherer(
             ICommonServiceLayerProvider commonServiceLayerProvider,
-            ISQLDatabaseProvider sqlDatabaseProvider,
             IEstablishmentsTableProvider storageTableProvider,
             ILoggerFactory loggerFactory)
         {
             _commonServiceLayerProvider = commonServiceLayerProvider;
-            _sqlDatabaseProvider = sqlDatabaseProvider;
             _storageTableProvider = storageTableProvider;
             _logger = loggerFactory.CreateLogger<InspectionDataGatherer>();
         }

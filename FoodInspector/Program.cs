@@ -3,16 +3,12 @@ using CommonFunctionality.AppToken;
 using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.Model;
 using CommonFunctionality.StorageAccount;
-using DotNetCoreSqlDb.Models;
 using FoodInspector.Configuration;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.InspectionDataWriter;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
-using FoodInspector.Providers.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -63,16 +59,13 @@ namespace FoodInspector
             builder.ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
-                services.AddSingleton<IInspectionDataWriter, FoodInspector.InspectionDataWriter.InspectionDataWriter>();
                 services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
-                services.AddSingleton<ISQLDatabaseProvider, SQLDatabaseProvider>();
                 services.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
-                services.AddDbContext<FoodInspectorDatabaseContext>(options =>
-                    options.UseSqlServer(configurationManager.GetConnectionString("AZURE_SQL_CONNECTIONSTRING")));
+
                 services.AddLogging();
 
                 AddOptions(services, hostContext.Configuration);

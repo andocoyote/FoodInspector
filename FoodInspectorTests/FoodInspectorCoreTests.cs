@@ -1,9 +1,7 @@
 using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.Model;
 using FoodInspector.DependencyInjection;
-using FoodInspector.InspectionDataWriter;
 using FoodInspector.Providers.EstablishmentsProvider;
-using FoodInspector.Providers.SQLDatabaseProvider;
 using HttpClientTest.HttpHelpers;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
@@ -42,20 +40,6 @@ namespace FoodInspectorTests
         {
             string connectionstring = _configuration["AZURE_SQL_CONNECTIONSTRING"];
             Console.WriteLine($"{connectionstring}");
-        }
-
-        [TestMethod]
-        public void TestSQLDatabaseProvider()
-        {
-            try
-            {
-                IInspectionDataWriter inspectionDataWriter = _services.GetRequiredService<IInspectionDataWriter>();
-                inspectionDataWriter.WriteData();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[TestSQLDatabaseProvider] An exception was caught: {ex}");
-            }
         }
 
         [TestMethod]
@@ -129,20 +113,6 @@ namespace FoodInspectorTests
             catch (Exception ex)
             {
                 Console.WriteLine($"[GetFoodEstablishmentInspectionResults] An exception was caught: {ex}");
-            }
-        }
-
-        [TestMethod]
-        public void GetSQLDatabaseProviderConnectionString()
-        {
-            try
-            {
-                ISQLDatabaseProvider sqlDatabaseProvider = _services.GetRequiredService<ISQLDatabaseProvider>();
-                Console.WriteLine($"SqlDatabaseProvider.ConnectionString: {sqlDatabaseProvider.ConnectionString}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"[TestSQLDatabaseProvider] An exception was caught: {ex}");
             }
         }
 

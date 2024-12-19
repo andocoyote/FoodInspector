@@ -4,7 +4,7 @@ namespace FoodInspector.Providers.EstablishmentsProvider
 {
     public class EstablishmentsProvider : IEstablishmentsProvider
     {
-        private readonly string _path = Environment.CurrentDirectory + @"\EstablishmentsProvider\Establishments.json";
+        private readonly string _path = Environment.CurrentDirectory + @"\Providers\EstablishmentsProvider\Establishments.json";
 
         /// <summary>
         /// Reads the JSON file containing establishment descriptors and creates a list of EstablishmentModel items
