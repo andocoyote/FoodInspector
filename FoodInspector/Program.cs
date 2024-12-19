@@ -8,7 +8,6 @@ using FoodInspector.InspectionDataGatherer;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
-using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -58,17 +57,20 @@ namespace FoodInspector
             // Configure the Dependency Injection container
             builder.ConfigureServices((hostContext, services) =>
             {
+                string foodInspectorApiUri = hostContext.Configuration["FoodInspectorApi:Uri"];
+
+                AddOptions(services, hostContext.Configuration);
+
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
-                services.AddSingleton<ICommonServiceLayerProvider, CommonServiceLayerProvider>();
                 services.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
 
-                services.AddLogging();
+                services.AddHttpClient("InspectionDataGatherer", c => c.BaseAddress = new System.Uri(foodInspectorApiUri));
 
-                AddOptions(services, hostContext.Configuration);
+                services.AddLogging();
             });
 
             // The AddConsole method adds console logging to the configuration

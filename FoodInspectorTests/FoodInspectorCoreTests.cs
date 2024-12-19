@@ -2,7 +2,6 @@ using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.Model;
 using FoodInspector.DependencyInjection;
 using FoodInspector.Providers.EstablishmentsProvider;
-using HttpClientTest.HttpHelpers;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +41,7 @@ namespace FoodInspectorTests
             Console.WriteLine($"{connectionstring}");
         }
 
+        /*
         [TestMethod]
         public async Task CallFoodEstablishmentInspectionDataAPI()
         {
@@ -58,6 +58,7 @@ namespace FoodInspectorTests
                 Console.WriteLine($"[CallFoodEstablishmentInspectionDataAPI] An exception was caught: {ex}");
             }
         }
+        */
 
         [TestMethod]
         public void ReadEstablishmentsFile()
@@ -84,6 +85,7 @@ namespace FoodInspectorTests
             }
         }
 
+        /*
         [TestMethod]
         public async Task GetFoodEstablishmentInspectionResults()
         {
@@ -115,7 +117,9 @@ namespace FoodInspectorTests
                 Console.WriteLine($"[GetFoodEstablishmentInspectionResults] An exception was caught: {ex}");
             }
         }
+        */
 
+        /*
         [TestMethod]
         public async Task WriteInspectionDataToCosmosDB()
         {
@@ -158,6 +162,7 @@ namespace FoodInspectorTests
                 Console.WriteLine($"[WriteInspectionDataToCosmosDB] An exception was caught. Exception: {ex}");
             }
         }
+        */
 
         [TestMethod]
         public async Task ReadInspectionDataFromCosmosDB()

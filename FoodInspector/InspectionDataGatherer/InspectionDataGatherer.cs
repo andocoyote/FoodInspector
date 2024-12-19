@@ -1,24 +1,25 @@
 ﻿using CommonFunctionality.Model;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
-using HttpClientTest.HttpHelpers;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace FoodInspector.InspectionDataGatherer
 {
     public class InspectionDataGatherer : IInspectionDataGatherer
     {
-        private readonly ICommonServiceLayerProvider _commonServiceLayerProvider;
         private readonly IEstablishmentsTableProvider _storageTableProvider;
         private readonly ILogger _logger;
+        private static HttpClient _httpClient;
 
         public InspectionDataGatherer(
-            ICommonServiceLayerProvider commonServiceLayerProvider,
             IEstablishmentsTableProvider storageTableProvider,
+            IHttpClientFactory httpClientfactory,
             ILoggerFactory loggerFactory)
         {
-            _commonServiceLayerProvider = commonServiceLayerProvider;
             _storageTableProvider = storageTableProvider;
+            _httpClient = httpClientfactory.CreateClient("InspectionDataGatherer");
             _logger = loggerFactory.CreateLogger<InspectionDataGatherer>();
         }
 
@@ -43,7 +44,14 @@ namespace FoodInspector.InspectionDataGatherer
             }
 
             // Query the API to obtain the food inspection records
-            inspectionData = await _commonServiceLayerProvider.GetInspections(establishmentsList);
+            using HttpResponseMessage response = await _httpClient.GetAsync("api/FoodInspector/UserQueries/AllEstablishmentsAllInspectionsRaw");
+
+            string results = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+
+            var jsonResponse = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"{jsonResponse}\n");
+
+            List<InspectionData> inspectionDataList = JsonConvert.DeserializeObject<List<InspectionData>>(results, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, SerializationBinder = new DefaultSerializationBinder() });
 
             return inspectionData;
         }
