@@ -1,7 +1,8 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.Model;
 using FoodInspector.InspectionDataGatherer;
+using FoodInspector.Providers.AzureAIProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
+using FoodInspectorModels;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,22 +16,25 @@ namespace FoodInspector
         private readonly IConfiguration _configuration;
         private readonly IOptions<CosmosDbOptions> _cosmosDbOptions;
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
-        private readonly ICosmosDbProvider<InspectionData> _cosmosDbProvider;
+        private readonly ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
+        private readonly IAzureAIProvider _azureAIProvider;
         private ILogger _logger;
 
         public Functions(
             IConfiguration configuration,
             IOptions<CosmosDbOptions> cosmosDbOptions,
             IInspectionDataGatherer inspectionDataGatherer,
-            ICosmosDbProviderFactory<InspectionData> cosmosDbProviderFactory,
-            IExistingInspectionsTableProvider existingInspectionsTableProvider)
+            ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProviderFactory,
+            IExistingInspectionsTableProvider existingInspectionsTableProvider,
+            IAzureAIProvider azureAIProvider)
         {
             _configuration = configuration;
             _cosmosDbOptions = cosmosDbOptions;
             _inspectionDataGatherer = inspectionDataGatherer;
             _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;
+            _azureAIProvider = azureAIProvider;
         }
 
         public async Task ProcessMessageOnTimer(
@@ -45,44 +49,32 @@ namespace FoodInspector
                 DisplayConfiguration();
 
                 // Query the food inspections API for the latest data
-                List<InspectionData> inspectionDataList = await _inspectionDataGatherer.GatherData();
+                List<InspectionRecordAggregated> inspectionRecordAggregatedList = await _inspectionDataGatherer.QueryAllInspections();
 
-                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionDataList count: {(inspectionDataList?.Count ?? -1)}.");
+                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList count: {(inspectionRecordAggregatedList?.Count ?? -1)}.");
 
-                if (inspectionDataList != null)
-                {
-                    foreach (InspectionData inspectionData in inspectionDataList)
+                await SaveInspectionsToStorageTable(inspectionRecordAggregatedList);
+
+                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Storage.");
+
+                await SaveInspectionsToCosmosDb(inspectionRecordAggregatedList);
+
+                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Cosmos DB.");
+
+                List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels = 
+                    inspectionRecordAggregatedList.Select(i => new InspectionRecordOpenAIRequestModel()
                     {
-                        _logger.LogInformation(
-                            "[ProcessMessageOnTimer]: " +
-                            $"Name: {inspectionData.Name} " +
-                            $"City: {inspectionData.City} " +
-                        $"City: {inspectionData.Inspection_Result}");
+                        ProgramIdentifier = i.ProgramIdentifier,
+                        InspectionScore = i.InspectionScore,
+                        InspectionResult = i.InspectionResult,
+                        InspectionClosedBusiness = i.InspectionClosedBusiness,
+                        Violations = i.Violations,
+                        InspectionSerialNum = i.InspectionSerialNum,
+                    }).ToList();
 
-                        // Determine if we already have data for the current inspection for the establishment
-                        List<ExistingInspectionModel> existingInspectionModelsList = await _existingInspectionsTableProvider.QueryInspectionRecord(
-                            inspectionData.Inspection_Serial_Num,
-                            inspectionData.id);
+                string chatResult = _azureAIProvider.Check(inspectionRecordOpenAIRequestModels);
 
-                        // If we haven't seen this inspection before, write the complete data to Cosmos DB
-                        // and note the inspection serial number and ID to Azure Storage table
-                        if (existingInspectionModelsList.Count == 0)
-                        {
-                            await _existingInspectionsTableProvider.AddInspectionRecord(
-                            inspectionData.Inspection_Serial_Num,
-                            inspectionData.id);
-                            _logger.LogInformation("[ProcessMessageOnTimer]: Added inspection record to Azure Storage Table.");
-
-                            await _cosmosDbProvider.WriteDocument(inspectionData);
-                            _logger.LogInformation("[ProcessMessageOnTimer]: Wrote inspection data to Cosmos DB.");
-                        }
-                        // Else, we've already seen this data so no reason to upsert it to Cosmos DB
-                        else
-                        {
-                            _logger.LogInformation("[ProcessMessageOnTimer]: Inspection record already exists in Azure Storage Table.");
-                        }
-                    }
-                }
+                _logger.LogInformation(chatResult);
             }
             catch (Exception ex)
             {
@@ -106,6 +98,66 @@ namespace FoodInspector
             _logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: CosmosDb:Containers:InspectionData = {_configuration.GetValue<string>("CosmosDb:Containers:InspectionData")}");
             _logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: ASPNETCORE_ENVIRONMENT = {_configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT")}");
 
+        }
+
+        private async Task SaveInspectionsToStorageTable(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
+        {
+            // Iterate over each inspection:
+            //  If we haven't seen this inspection before, write the inspection serial number to Azure Storage table
+            if (inspectionRecordAggregatedList != null)
+            {
+                foreach (InspectionRecordAggregated inspectionRecordAggregated in inspectionRecordAggregatedList)
+                {
+                    _logger.LogInformation(
+                        "[SaveInspectionsToStorageTable]: " +
+                        $"Name: {inspectionRecordAggregated.Name} " +
+                        $"City: {inspectionRecordAggregated.City} " +
+                        $"Inspection_Result: {inspectionRecordAggregated.InspectionResult}");
+
+                    // Determine if we already have data for the current inspection for the establishment
+                    List<ExistingInspectionModel> existingInspectionModelsList = await _existingInspectionsTableProvider.QueryInspectionRecord(
+                        inspectionRecordAggregated.InspectionSerialNum,
+                        inspectionRecordAggregated.InspectionSerialNum);
+
+                    if (existingInspectionModelsList.Count == 0)
+                    {
+                        // Write the inspection serial number and ID to Azure Storage table
+                        await _existingInspectionsTableProvider.AddInspectionRecord(
+                        inspectionRecordAggregated.InspectionSerialNum,
+                        inspectionRecordAggregated.InspectionSerialNum);
+                        _logger.LogInformation("[SaveInspectionsToStorageTable]: Added inspection record to Azure Storage Table.");
+                    }
+                    // Else, we've already seen this data so no reason to upsert it to Azure Storage table
+                    else
+                    {
+                        _logger.LogInformation("[SaveInspectionsToStorageTable]: Inspection record already exists in Azure Storage Table.");
+                    }
+                }
+            }
+        }
+
+        private async Task SaveInspectionsToCosmosDb(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
+        {
+            // Iterate over each inspection:
+            //  If we haven't seen this inspection before, write the complete data to Cosmos DB
+            if (inspectionRecordAggregatedList != null)
+            {
+                foreach (InspectionRecordAggregated inspectionRecordAggregated in inspectionRecordAggregatedList)
+                {
+                    CosmosDbWriteDocument cosmosDbWriteDocument = new CosmosDbWriteDocument(inspectionRecordAggregated);
+                    cosmosDbWriteDocument.id = cosmosDbWriteDocument.InspectionSerialNum;
+
+                    _logger.LogInformation(
+                        "[SaveInspectionsToCosmosDb]: " +
+                        $"Name: {inspectionRecordAggregated.Name} " +
+                        $"City: {inspectionRecordAggregated.City} " +
+                        $"Inspection_Result: {inspectionRecordAggregated.InspectionResult}");
+
+                    // Write the complete data to Cosmos DB
+                    await _cosmosDbProvider.WriteDocument(cosmosDbWriteDocument);
+                    _logger.LogInformation("[SaveInspectionsToCosmosDb]: Wrote inspection data to Cosmos DB.");
+                }
+            }
         }
     }
 }

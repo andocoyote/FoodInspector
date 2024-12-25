@@ -1,9 +1,9 @@
-﻿using CommonFunctionality.Model;
+﻿using FoodInspectorModels;
 
 namespace FoodInspector.InspectionDataGatherer
 {
     public interface IInspectionDataGatherer
     {
-        Task<List<InspectionData>> GatherData();
+        Task<List<InspectionRecordAggregated>> QueryAllInspections();
     }
 }

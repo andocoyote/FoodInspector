@@ -1,10 +1,11 @@
 ﻿using Azure.Identity;
 using CommonFunctionality.AppToken;
+using CommonFunctionality.AzureAI;
 using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.Model;
 using CommonFunctionality.StorageAccount;
 using FoodInspector.Configuration;
 using FoodInspector.InspectionDataGatherer;
+using FoodInspector.Providers.AzureAIProvider;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
@@ -65,8 +66,9 @@ namespace FoodInspector
                 services.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
-                services.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
+                services.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
+                services.AddSingleton<IAzureAIProvider, AzureAIProvider>();
 
                 services.AddHttpClient("InspectionDataGatherer", c => c.BaseAddress = new System.Uri(foodInspectorApiUri));
 
@@ -106,6 +108,8 @@ namespace FoodInspector
                 configRoot.GetSection("Storage"));
             services.Configure<AppTokenOptions>(
                 configRoot.GetSection("AppToken"));
+            services.Configure<AzureAIOptions>(
+                configRoot.GetSection("AzureAI"));
         }
     }
 }

@@ -1,4 +1,5 @@
 using Azure.Messaging.ServiceBus;
+using CommonFunctionality.CosmosDbProvider;
 using InspectionEvaluator.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
@@ -32,9 +33,9 @@ namespace InspectionEvaluator
                     ServiceBusQueueEvent serviceBusQueueEvent = JsonSerializer.Deserialize<ServiceBusQueueEvent>(message.Body);
 
                     // Deserialize the data portion of the event: this contains the inspection results
-                    InspectionData inspectionData = JsonSerializer.Deserialize<InspectionData>(serviceBusQueueEvent.data);
+                    CosmosDbReadDocument cosmosDbReadDocument = JsonSerializer.Deserialize<CosmosDbReadDocument>(serviceBusQueueEvent.data);
 
-                    _logger.LogInformation($"[InspectionEvaluator] Inspection for {inspectionData.Name}. Inspection type: {inspectionData.Inspection_Type}. Violation: {inspectionData.Violation_Description}.");
+                    _logger.LogInformation($"[InspectionEvaluator] Inspection for {cosmosDbReadDocument.Name}. Inspection type: {cosmosDbReadDocument.InspectionType}. Violations: {cosmosDbReadDocument.Violations.Count}.");
                 }
                 catch (Exception e)
                 {

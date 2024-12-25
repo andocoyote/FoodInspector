@@ -1,7 +1,9 @@
 ﻿namespace CommonFunctionality.CosmosDbProvider
 {
-    public interface ICosmosDbProviderFactory<T> where T : CosmosDbDocument
+    public interface ICosmosDbProviderFactory<TWriteDocument, TReadDocument>
+        where TWriteDocument : CosmosDbWriteDocument
+        where TReadDocument : CosmosDbReadDocument
     {
-        ICosmosDbProvider<T> CreateProvider();
+        ICosmosDbProvider<TWriteDocument, TReadDocument> CreateProvider();
     }
 }

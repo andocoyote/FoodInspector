@@ -1,5 +1,4 @@
 ﻿using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.Model;
 using EventStore.CosmosDb;
 using EventStore.Domain;
 using FoodInspector.Providers.EstablishmentsProvider;
@@ -19,7 +18,7 @@ namespace FoodInspector.DependencyInjection
             serviceCollection.AddSingleton<ILoggerFactory, LoggerFactory>();
             serviceCollection.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
-            serviceCollection.AddSingleton<ICosmosDbProviderFactory<InspectionData>, InspectionDataCosmosDbProviderFactory>();
+            serviceCollection.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
             serviceCollection.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
             serviceCollection.AddSingleton<ICosmosClient<TestEvent>, CosmosClient<TestEvent>>();
             serviceCollection.AddLogging();

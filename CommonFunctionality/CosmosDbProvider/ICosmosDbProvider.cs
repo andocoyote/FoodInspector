@@ -2,9 +2,11 @@
 
 namespace CommonFunctionality.CosmosDbProvider
 {
-    public interface ICosmosDbProvider<T> where T : CosmosDbDocument
+    public interface ICosmosDbProvider<TWriteDocument, TReadDocument>
+        where TWriteDocument : CosmosDbWriteDocument
+        where TReadDocument : CosmosDbReadDocument
     {
-        Task WriteDocument(T document);
-        Task<T> ReadDocument(string id, PartitionKey partitionKey);
+        Task WriteDocument(TWriteDocument document);
+        Task<TReadDocument> ReadDocument(string id, PartitionKey partitionKey);
     }
 }

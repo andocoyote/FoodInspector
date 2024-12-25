@@ -1,5 +1,4 @@
 using CommonFunctionality.CosmosDbProvider;
-using CommonFunctionality.Model;
 using FoodInspector.DependencyInjection;
 using FoodInspector.Providers.EstablishmentsProvider;
 using Microsoft.Azure.Cosmos;
@@ -169,10 +168,10 @@ namespace FoodInspectorTests
         {
             try
             {
-                ICosmosDbProviderFactory<InspectionData> factory = _services.GetRequiredService<ICosmosDbProviderFactory<InspectionData>>();
-                ICosmosDbProvider<InspectionData> cosmosDbProvider = factory.CreateProvider();
+                ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> factory = _services.GetRequiredService<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>>();
+                ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProvider = factory.CreateProvider();
 
-                InspectionData inspectionData = await cosmosDbProvider.ReadDocument("0", new PartitionKey("DAJWHFI6N"));
+                CosmosDbReadDocument inspectionData = await cosmosDbProvider.ReadDocument("0", new PartitionKey("DAJWHFI6N"));
 
                 if (inspectionData != null)
                 {
@@ -180,7 +179,7 @@ namespace FoodInspectorTests
                             "[ReadInspectionDataFromCosmosDB]: " +
                             $"Name: {inspectionData.Name} " +
                             $"City: {inspectionData.City} " +
-                            $"Inspection_Result: {inspectionData.Inspection_Result}");
+                            $"Inspection_Result: {inspectionData.InspectionResult}");
                 }
                 else
                 {

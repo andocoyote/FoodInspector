@@ -1,11 +1,10 @@
-﻿using CommonFunctionality.Model;
-using Microsoft.Azure.Cosmos;
+﻿using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace CommonFunctionality.CosmosDbProvider
 {
-    public class InspectionDataCosmosDbProvider : CosmosDbProviderBase, ICosmosDbProvider<InspectionData>
+    public class InspectionDataCosmosDbProvider : CosmosDbProviderBase, ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument>
     {
         // The ID of this violation in the set of violations for an establishment
         // If there are multiple violations for an establishment during a single inspection,
@@ -21,14 +20,14 @@ namespace CommonFunctionality.CosmosDbProvider
         {
         }
 
-        public async Task WriteDocument(InspectionData document)
+        public async Task WriteDocument(CosmosDbWriteDocument document)
         {
-            await WriteDocument<InspectionData>(document);
+            await WriteDocument<CosmosDbWriteDocument>(document);
         }
 
-        public async Task<InspectionData> ReadDocument(string id, PartitionKey partitionKey)
+        public async Task<CosmosDbReadDocument> ReadDocument(string id, PartitionKey partitionKey)
         {
-            return await ReadDocument<InspectionData>(id, partitionKey);
+            return await ReadDocument<CosmosDbReadDocument>(id, partitionKey);
         }
     }
 }

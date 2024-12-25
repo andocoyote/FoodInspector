@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using Azure.Messaging.EventGrid;
+using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.EventGrid;
-using InspectionDataEventCreator.Model;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace InspectionDataEventStreamCreator
 {
@@ -30,12 +28,12 @@ namespace InspectionDataEventStreamCreator
         [Function("InspectionDataEventCreatorFunction")]
         public async Task Run([CosmosDBTrigger(
             databaseName: "FoodInspector",
-            containerName: "InspectionData",
+            containerName: "InspectionRecordsAggregated",
             Connection = "AzureCosmosDbConnectionString",
             LeaseContainerName = "leases",
-            CreateLeaseContainerIfNotExists = true)] IReadOnlyList<InspectionData> input)
+            CreateLeaseContainerIfNotExists = true)] IReadOnlyList<CosmosDbReadDocument> input)
         {
-            _logger.LogInformation("[InspectionDataEventCreatorFunction] About to process change feed for InspectionData container.");
+            _logger.LogInformation("[InspectionDataEventCreatorFunction] About to process change feed for InspectionRecordsAggregated container.");
 
             try
             {
@@ -58,9 +56,9 @@ namespace InspectionDataEventStreamCreator
                     {
                         while (enumerator.MoveNext())
                         {
-                            _logger.LogInformation($"[InspectionDataEventCreatorFunction] Sending event for document ID: {enumerator.Current.Id}");
+                            _logger.LogInformation($"[InspectionDataEventCreatorFunction] Sending event for document ID: {enumerator.Current.id}");
 
-                            string jsonString = JsonSerializer.Serialize<InspectionData>(enumerator.Current);
+                            string jsonString = JsonSerializer.Serialize(enumerator.Current);
 
                             // Create the event to send to Event Grid
                             EventGridEvent eventGridEvent = new EventGridEvent(
@@ -80,7 +78,7 @@ namespace InspectionDataEventStreamCreator
                 _logger.LogError($"[InspectionDataEventCreatorFunction] An exception was caught. Exception: {ex}");
             }
 
-            _logger.LogInformation("[InspectionDataEventCreatorFunction] Finished processing change feed for InspectionData container.");
+            _logger.LogInformation("[InspectionDataEventCreatorFunction] Finished processing change feed for InspectionRecordsAggregated container.");
         }
 
         private void DisplayConfiguration(ILogger logger)
