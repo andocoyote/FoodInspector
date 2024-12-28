@@ -33,7 +33,7 @@ namespace CommonFunctionality.CosmosDbProvider
         /// </summary>
         /// <param name="inspectionData">The InspectionData object to write</param>
         /// <returns></returns>
-        protected async Task WriteDocument<T>(T document)
+        protected async Task WriteDocumentAsync<T>(T document)
         {
             await _client.GetContainer(_database, _container).UpsertItemAsync(document);
         }
@@ -44,11 +44,27 @@ namespace CommonFunctionality.CosmosDbProvider
         /// <param name="id">The ID of the document to read</param>
         /// <param name="partitionKey">The partition key of the document to read</param>
         /// <returns>The document read from Cosmos DB</returns>
-        protected async Task<T> ReadDocument<T>(string id, PartitionKey partitionKey)
+        protected async Task<T> ReadDocumentAsync<T>(string id, PartitionKey partitionKey)
         {
             T doc = await _client.GetContainer(_database, _container).ReadItemAsync<T>(id, partitionKey);
 
             return doc;
+        }
+
+        protected IOrderedQueryable<T> GetItemLinqQueryable<T>()
+        {
+            // Get LINQ IQueryable object
+            IOrderedQueryable<T> collection = _client.GetContainer(_database, _container).GetItemLinqQueryable<T>();
+
+            return collection;
+        }
+
+        protected FeedIterator<T> GetItemQueryIterator<T>(string cosmosDbQueryStr)
+        {
+            // Get SQL FeedIterator object
+            FeedIterator<T> feedIterator = _client.GetContainer(_database, _container).GetItemQueryIterator<T>(new QueryDefinition(cosmosDbQueryStr));
+
+            return feedIterator;
         }
     }
 }

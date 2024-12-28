@@ -6,7 +6,8 @@ namespace CommonFunctionality.CosmosDbProvider
         where TWriteDocument : CosmosDbWriteDocument
         where TReadDocument : CosmosDbReadDocument
     {
-        Task WriteDocument(TWriteDocument document);
-        Task<TReadDocument> ReadDocument(string id, PartitionKey partitionKey);
+        Task WriteDocumentAsync(TWriteDocument document);
+        Task<TReadDocument> ReadDocumentAsync(string id, PartitionKey partitionKey);
+        Task<List<TReadDocument>> QueryLatestInspectionRecordsAsync();
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Azure.Identity;
+using Azure.Messaging.ServiceBus;
 using CommonFunctionality.AppToken;
-using CommonFunctionality.AzureAI;
 using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.StorageAccount;
 using FoodInspector.Configuration;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Providers.AzureAIProvider;
+using FoodInspector.Providers.EmailMessageProvider;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
@@ -68,9 +68,25 @@ namespace FoodInspector
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
-                services.AddSingleton<IAzureAIProvider, AzureAIProvider>();
+                services.AddSingleton<IEmailMessageProvider, EmailMessageProvider>();
 
                 services.AddHttpClient("InspectionDataGatherer", c => c.BaseAddress = new System.Uri(foodInspectorApiUri));
+
+                string serviceBusNamespace = "sb-food-inspector.servicebus.windows.net";
+                string queueName = "inspectionrecordsaggregatedqueue";
+
+                // Register the Service Bus Client
+                services.AddSingleton(serviceProvider =>
+                {
+                    return new ServiceBusClient(serviceBusNamespace, new DefaultAzureCredential());
+                });
+
+                // Register the Service Bus Sender
+                services.AddSingleton(serviceProvider =>
+                {
+                    var client = serviceProvider.GetRequiredService<ServiceBusClient>();
+                    return client.CreateSender(queueName);
+                });
 
                 services.AddLogging();
             });
@@ -108,8 +124,8 @@ namespace FoodInspector
                 configRoot.GetSection("Storage"));
             services.Configure<AppTokenOptions>(
                 configRoot.GetSection("AppToken"));
-            services.Configure<AzureAIOptions>(
-                configRoot.GetSection("AzureAI"));
+            services.Configure<EmailMessageOptions>(
+                configRoot.GetSection("EmailMessage"));
         }
     }
 }

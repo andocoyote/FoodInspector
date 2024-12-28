@@ -17,7 +17,7 @@ namespace InspectionEvaluator
         }
 
         [Function(nameof(Function))]
-        public async Task Run(
+        public void Run(
             [ServiceBusTrigger("newinspectionqueue", Connection = "AzureWebJobsServiceBus")]
             ServiceBusReceivedMessage message,
             ServiceBusMessageActions messageActions)

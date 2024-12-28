@@ -1,6 +1,7 @@
-﻿using CommonFunctionality.CosmosDbProvider;
+﻿using Azure.Messaging.ServiceBus;
+using CommonFunctionality.CosmosDbProvider;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Providers.AzureAIProvider;
+using FoodInspector.Providers.EmailMessageProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
 using FoodInspectorModels;
 using Microsoft.Azure.WebJobs;
@@ -18,7 +19,8 @@ namespace FoodInspector
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
         private readonly ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
-        private readonly IAzureAIProvider _azureAIProvider;
+        private readonly IEmailMessageProvider _emailMessageProvider;
+        private readonly ServiceBusSender _serviceBusSender;
         private ILogger _logger;
 
         public Functions(
@@ -27,14 +29,16 @@ namespace FoodInspector
             IInspectionDataGatherer inspectionDataGatherer,
             ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider,
-            IAzureAIProvider azureAIProvider)
+            IEmailMessageProvider emailMessageProvider,
+            ServiceBusSender serviceBusSender)
         {
             _configuration = configuration;
             _cosmosDbOptions = cosmosDbOptions;
             _inspectionDataGatherer = inspectionDataGatherer;
             _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;
-            _azureAIProvider = azureAIProvider;
+            _emailMessageProvider = emailMessageProvider;
+            _serviceBusSender = serviceBusSender;
         }
 
         public async Task ProcessMessageOnTimer(
@@ -53,28 +57,23 @@ namespace FoodInspector
 
                 _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList count: {(inspectionRecordAggregatedList?.Count ?? -1)}.");
 
-                await SaveInspectionsToStorageTable(inspectionRecordAggregatedList);
+                await SaveInspectionsToStorageTableAsync(inspectionRecordAggregatedList);
 
                 _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Storage.");
 
-                await SaveInspectionsToCosmosDb(inspectionRecordAggregatedList);
+                await SaveInspectionsToCosmosDbAsync(inspectionRecordAggregatedList);
 
                 _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Cosmos DB.");
 
-                List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels = 
-                    inspectionRecordAggregatedList.Select(i => new InspectionRecordOpenAIRequestModel()
-                    {
-                        ProgramIdentifier = i.ProgramIdentifier,
-                        InspectionScore = i.InspectionScore,
-                        InspectionResult = i.InspectionResult,
-                        InspectionClosedBusiness = i.InspectionClosedBusiness,
-                        Violations = i.Violations,
-                        InspectionSerialNum = i.InspectionSerialNum,
-                    }).ToList();
+                await SendServicBusMessageAsync("New aggregated inspections arrived");
 
-                string chatResult = _azureAIProvider.Check(inspectionRecordOpenAIRequestModels);
+                _logger.LogInformation($"[ProcessMessageOnTimer] message sent to Service Bus Queue.");
 
-                _logger.LogInformation(chatResult);
+                /*
+                await _emailMessageProvider.SendEmailAsync(chatResult);
+
+                _logger.LogInformation($"[ProcessMessageOnTimer] Email containing recommendations sent.");
+                */
             }
             catch (Exception ex)
             {
@@ -100,7 +99,7 @@ namespace FoodInspector
 
         }
 
-        private async Task SaveInspectionsToStorageTable(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
+        private async Task SaveInspectionsToStorageTableAsync(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
         {
             // Iterate over each inspection:
             //  If we haven't seen this inspection before, write the inspection serial number to Azure Storage table
@@ -136,7 +135,7 @@ namespace FoodInspector
             }
         }
 
-        private async Task SaveInspectionsToCosmosDb(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
+        private async Task SaveInspectionsToCosmosDbAsync(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
         {
             // Iterate over each inspection:
             //  If we haven't seen this inspection before, write the complete data to Cosmos DB
@@ -154,10 +153,16 @@ namespace FoodInspector
                         $"Inspection_Result: {inspectionRecordAggregated.InspectionResult}");
 
                     // Write the complete data to Cosmos DB
-                    await _cosmosDbProvider.WriteDocument(cosmosDbWriteDocument);
+                    await _cosmosDbProvider.WriteDocumentAsync(cosmosDbWriteDocument);
                     _logger.LogInformation("[SaveInspectionsToCosmosDb]: Wrote inspection data to Cosmos DB.");
                 }
             }
+        }
+
+        private async Task SendServicBusMessageAsync(string message)
+        {
+            var serviceBusMessage = new ServiceBusMessage(message);
+            await _serviceBusSender.SendMessageAsync(serviceBusMessage);
         }
     }
 }

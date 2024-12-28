@@ -171,7 +171,7 @@ namespace FoodInspectorTests
                 ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> factory = _services.GetRequiredService<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>>();
                 ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProvider = factory.CreateProvider();
 
-                CosmosDbReadDocument inspectionData = await cosmosDbProvider.ReadDocument("0", new PartitionKey("DAJWHFI6N"));
+                CosmosDbReadDocument inspectionData = await cosmosDbProvider.ReadDocumentAsync("0", new PartitionKey("DAJWHFI6N"));
 
                 if (inspectionData != null)
                 {

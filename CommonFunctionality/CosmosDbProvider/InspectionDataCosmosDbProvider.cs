@@ -14,20 +14,65 @@ namespace CommonFunctionality.CosmosDbProvider
 
         public InspectionDataCosmosDbProvider(
             IOptions<CosmosDbOptions> cosmosDbOptions,
-            ILoggerFactory loggerFactory) :base(
+            ILoggerFactory loggerFactory) : base(
                 cosmosDbOptions,
                 loggerFactory)
         {
         }
 
-        public async Task WriteDocument(CosmosDbWriteDocument document)
+        public async Task WriteDocumentAsync(CosmosDbWriteDocument document)
         {
-            await WriteDocument<CosmosDbWriteDocument>(document);
+            await WriteDocumentAsync<CosmosDbWriteDocument>(document);
         }
 
-        public async Task<CosmosDbReadDocument> ReadDocument(string id, PartitionKey partitionKey)
+        public async Task<CosmosDbReadDocument> ReadDocumentAsync(string id, PartitionKey partitionKey)
         {
-            return await ReadDocument<CosmosDbReadDocument>(id, partitionKey);
+            return await ReadDocumentAsync<CosmosDbReadDocument>(id, partitionKey);
+        }
+
+        public async Task<List<CosmosDbReadDocument>> QueryLatestInspectionRecordsAsync()
+        {
+            // The SQL way
+            string cosmosDbQueryStr = @"
+                SELECT*
+                FROM c
+                WHERE c.InspectionDate = (
+                    SELECT VALUE MAX(c2.InspectionDate)
+                    FROM c c2
+                    WHERE c2.ProgramIdentifier = c.ProgramIdentifier)";
+
+            // Query syntax (for documentation purposes)
+            /*var matches =
+                from c in collection
+                where c.InspectionDate == (
+                    from c2 in collection
+                    where c2.ProgramIdentifier == c.ProgramIdentifier
+                    select c2.InspectionDate)
+                    .Max()
+                select c;*/
+
+            // Method syntax (for documentation purposes)
+            /*var cosmosDbQuery = collection
+                .Where(c => c.InspectionDate == collection
+                    .Where(c2 => c2.ProgramIdentifier == c.ProgramIdentifier)
+                    .Max(c2 => c2.InspectionDate));*/
+
+            var queryIterator = GetItemQueryIterator<CosmosDbReadDocument>(cosmosDbQueryStr);
+
+            var mostRecentDocuments = new List<CosmosDbReadDocument>();
+            while (queryIterator.HasMoreResults)
+            {
+                var response = await queryIterator.ReadNextAsync();
+                mostRecentDocuments.AddRange(response);
+            }
+
+            // Output the results
+            foreach (var doc in mostRecentDocuments)
+            {
+                Console.WriteLine(doc);
+            }
+
+            return mostRecentDocuments;
         }
     }
 }

@@ -5,7 +5,8 @@ namespace EventStore.Events
 {
     public class Event<TDomainModel, TDataType> : Event<TDomainModel> where TDomainModel : IDomainModel
     {
-        private TDataType? eventData;
+        private TDataType eventData;
+
         public TDataType EventData
         {
             get

@@ -1,4 +1,4 @@
-﻿namespace CommonFunctionality.AzureAI
+﻿namespace LatestInspectionsProcessor.Providers.AzureAIProvider
 {
     public class AzureAIOptions
     {
@@ -7,6 +7,8 @@
             Endpoint = string.Empty;
             Deployment = string.Empty;
             Question = string.Empty;
+            SystemMessageFileName = string.Empty;
+            SystemMessageBlobContainer = string.Empty;
         }
 
         /// <summary>
@@ -15,6 +17,7 @@
         public string Endpoint { get; set; }
         public string Deployment {  get; set; }
         public string Question { get; set; }
-
+        public string SystemMessageFileName {  get; set; }
+        public string SystemMessageBlobContainer { get; set; }
     }
 }
