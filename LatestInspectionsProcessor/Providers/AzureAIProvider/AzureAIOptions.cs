@@ -1,4 +1,6 @@
-﻿namespace LatestInspectionsProcessor.Providers.AzureAIProvider
+﻿using System.Security.Policy;
+
+namespace LatestInspectionsProcessor.Providers.AzureAIProvider
 {
     public class AzureAIOptions
     {
@@ -8,6 +10,7 @@
             Deployment = string.Empty;
             Question = string.Empty;
             SystemMessageFileName = string.Empty;
+            JsonSchemaFileName = string.Empty;
             SystemMessageBlobContainer = string.Empty;
         }
 
@@ -18,6 +21,7 @@
         public string Deployment {  get; set; }
         public string Question { get; set; }
         public string SystemMessageFileName {  get; set; }
+        public string JsonSchemaFileName { get; set; }
         public string SystemMessageBlobContainer { get; set; }
     }
 }

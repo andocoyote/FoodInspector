@@ -5,6 +5,7 @@ using FoodInspectorModels;
 using LatestInspectionsProcessor.Providers.AzureAIProvider;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 using System.Text;
 
 namespace LatestInspectionsProcessor
@@ -40,31 +41,42 @@ namespace LatestInspectionsProcessor
         {
             _logger.LogInformation("[LatestInspectionsProcessor] Message Body: {body}", myQueueItem);
 
-            // Get latest inspection documents from Cosmos DB for all establishments
-            List<CosmosDbReadDocument> cosmosDbDocs = await _cosmosDbProvider.QueryLatestInspectionRecordsAsync();
+            try
+            {
 
-            _logger.LogInformation($"[LatestInspectionsProcessor] Retrieved {cosmosDbDocs.Count} documents from Cosmos DB.");
+                // Get latest inspection documents from Cosmos DB for all establishments
+                List<CosmosDbReadDocument> cosmosDbDocs = await _cosmosDbProvider.QueryLatestInspectionRecordsAsync();
 
-            List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels =
-                    cosmosDbDocs.Select(i => new InspectionRecordOpenAIRequestModel()
-                    {
-                        ProgramIdentifier = i.ProgramIdentifier,
-                        InspectionScore = i.InspectionScore,
-                        InspectionResult = i.InspectionResult,
-                        InspectionClosedBusiness = i.InspectionClosedBusiness,
-                        Violations = i.Violations,
-                        InspectionSerialNum = i.InspectionSerialNum,
-                    }).ToList();
+                _logger.LogInformation($"[LatestInspectionsProcessor] Retrieved {cosmosDbDocs.Count} documents from Cosmos DB.");
 
-            _logger.LogInformation(@$"[LatestInspectionsProcessor] Converted {inspectionRecordOpenAIRequestModels.Count} " +
-                "CosmosDbReadDocument documents to InspectionRecordOpenAIRequestModel items.");
+                List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels =
+                        cosmosDbDocs.Select(i => new InspectionRecordOpenAIRequestModel()
+                        {
+                            ProgramIdentifier = i.ProgramIdentifier,
+                            InspectionScore = i.InspectionScore,
+                            InspectionResult = i.InspectionResult,
+                            InspectionClosedBusiness = i.InspectionClosedBusiness,
+                            Violations = i.Violations,
+                            InspectionSerialNum = i.InspectionSerialNum,
+                        }).ToList();
 
-            string chatResultJSON = await _azureAIProvider.ProcessInspectionResults(inspectionRecordOpenAIRequestModels);
+                _logger.LogInformation(@$"[LatestInspectionsProcessor] Converted {inspectionRecordOpenAIRequestModels.Count} " +
+                    "CosmosDbReadDocument documents to InspectionRecordOpenAIRequestModel items.");
 
-            _logger.LogInformation($"[LatestInspectionsProcessor] AI recommendations retrieved: {(string.IsNullOrEmpty(chatResultJSON) ? "false" : "true")}");
+                string chatResultJSON = await _azureAIProvider.ProcessInspectionResults(inspectionRecordOpenAIRequestModels);
 
-            // Upload recommendations to Blob Storage
-            await UploadRecommendationsBlobAsync(chatResultJSON);
+                _logger.LogInformation($"[LatestInspectionsProcessor] AI recommendations retrieved: {(string.IsNullOrEmpty(chatResultJSON) ? "false" : "true")}");
+
+                // Upload recommendations to Blob Storage
+                if (!string.IsNullOrEmpty(chatResultJSON))
+                {
+                    await UploadRecommendationsBlobAsync(chatResultJSON);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"[LatestInspectionsProcessor] Exception caught while processing latest inspections: {ex}");
+            }
         }
 
         private async Task UploadRecommendationsBlobAsync(string chatResultJSON)
