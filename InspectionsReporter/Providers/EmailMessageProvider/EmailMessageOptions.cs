@@ -1,4 +1,4 @@
-﻿namespace FoodInspector.Providers.EmailMessageProvider
+﻿namespace InspectionsReporter.Providers.EmailMessageProvider
 {
     public class EmailMessageOptions
     {

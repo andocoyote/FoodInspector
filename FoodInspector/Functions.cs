@@ -1,7 +1,6 @@
 ﻿using Azure.Messaging.ServiceBus;
 using CommonFunctionality.CosmosDbProvider;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Providers.EmailMessageProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
 using FoodInspectorModels;
 using Microsoft.Azure.WebJobs;
@@ -19,7 +18,6 @@ namespace FoodInspector
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
         private readonly ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
-        private readonly IEmailMessageProvider _emailMessageProvider;
         private readonly ServiceBusSender _serviceBusSender;
         private ILogger _logger;
 
@@ -29,7 +27,6 @@ namespace FoodInspector
             IInspectionDataGatherer inspectionDataGatherer,
             ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider,
-            IEmailMessageProvider emailMessageProvider,
             ServiceBusSender serviceBusSender)
         {
             _configuration = configuration;
@@ -37,7 +34,6 @@ namespace FoodInspector
             _inspectionDataGatherer = inspectionDataGatherer;
             _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;
-            _emailMessageProvider = emailMessageProvider;
             _serviceBusSender = serviceBusSender;
         }
 
@@ -68,12 +64,6 @@ namespace FoodInspector
                 await SendServicBusMessageAsync("New aggregated inspections arrived");
 
                 _logger.LogInformation($"[ProcessMessageOnTimer] message sent to Service Bus Queue.");
-
-                /*
-                await _emailMessageProvider.SendEmailAsync(chatResult);
-
-                _logger.LogInformation($"[ProcessMessageOnTimer] Email containing recommendations sent.");
-                */
             }
             catch (Exception ex)
             {

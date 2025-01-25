@@ -5,7 +5,6 @@ using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.StorageAccount;
 using FoodInspector.Configuration;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Providers.EmailMessageProvider;
 using FoodInspector.Providers.EstablishmentsProvider;
 using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
@@ -68,7 +67,6 @@ namespace FoodInspector
                 services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
-                services.AddSingleton<IEmailMessageProvider, EmailMessageProvider>();
 
                 services.AddHttpClient("InspectionDataGatherer", c => c.BaseAddress = new System.Uri(foodInspectorApiUri));
 
@@ -124,8 +122,6 @@ namespace FoodInspector
                 configRoot.GetSection("Storage"));
             services.Configure<AppTokenOptions>(
                 configRoot.GetSection("AppToken"));
-            services.Configure<EmailMessageOptions>(
-                configRoot.GetSection("EmailMessage"));
         }
     }
 }

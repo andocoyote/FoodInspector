@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InspectionDataEventStreamCr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "InspectionEvaluator", "InspectionEvaluator\InspectionEvaluator.csproj", "{D82B2019-D41A-431E-9B04-C14F83F541AA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LatestInspectionsProcessor", "LatestInspectionsProcessor\LatestInspectionsProcessor.csproj", "{DDAB6949-7C27-4CD5-9FB8-074C3C918D51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LatestInspectionsProcessor", "LatestInspectionsProcessor\LatestInspectionsProcessor.csproj", "{DDAB6949-7C27-4CD5-9FB8-074C3C918D51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InspectionsReporter", "InspectionsReporter\InspectionsReporter.csproj", "{944358E4-0A4F-47E6-B17E-8856B11A210F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{DDAB6949-7C27-4CD5-9FB8-074C3C918D51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDAB6949-7C27-4CD5-9FB8-074C3C918D51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDAB6949-7C27-4CD5-9FB8-074C3C918D51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{944358E4-0A4F-47E6-B17E-8856B11A210F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{944358E4-0A4F-47E6-B17E-8856B11A210F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{944358E4-0A4F-47E6-B17E-8856B11A210F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{944358E4-0A4F-47E6-B17E-8856B11A210F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

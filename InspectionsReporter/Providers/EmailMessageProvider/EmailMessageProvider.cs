@@ -4,7 +4,7 @@ using Azure.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace FoodInspector.Providers.EmailMessageProvider
+namespace InspectionsReporter.Providers.EmailMessageProvider
 {
     public class EmailMessageProvider : IEmailMessageProvider
     {
@@ -28,8 +28,6 @@ namespace FoodInspector.Providers.EmailMessageProvider
         {
             try
             {
-                string connectionString = Environment.GetEnvironmentVariable("COMMUNICATION_SERVICES_CONNECTION_STRING");
-
                 // Create the EmailClient
                 _logger.LogInformation($"[SendEmailAsync] Creating the EmailClient.");
                 //var emailClient = new EmailClient(connectionString);
