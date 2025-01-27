@@ -2,11 +2,13 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using CommonFunctionality.CosmosDbProvider;
 using FoodInspectorModels;
+using LatestInspectionsProcessor.Models;
 using LatestInspectionsProcessor.Providers.AzureAIProvider;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.Json;
 
 namespace LatestInspectionsProcessor
 {
@@ -49,6 +51,7 @@ namespace LatestInspectionsProcessor
 
                 _logger.LogInformation($"[LatestInspectionsProcessor] Retrieved {cosmosDbDocs.Count} documents from Cosmos DB.");
 
+                // Only send the minimum info required for ChatGPT to make recommendations
                 List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels =
                         cosmosDbDocs.Select(i => new InspectionRecordOpenAIRequestModel()
                         {
@@ -67,10 +70,39 @@ namespace LatestInspectionsProcessor
 
                 _logger.LogInformation($"[LatestInspectionsProcessor] AI recommendations retrieved: {(string.IsNullOrEmpty(chatResultJSON) ? "false" : "true")}");
 
-                // Upload recommendations to Blob Storage
-                if (!string.IsNullOrEmpty(chatResultJSON))
+                // Now that we have the recommendations, use them to create the larger data model with all establishment properties
+                RecommendationsModel? recommendationsModel = JsonSerializer.Deserialize<RecommendationsModel>(chatResultJSON);
+
+                EstablishmentRecommendations establishmentRecommendations = new();
+                establishmentRecommendations.Recommended = new List<InspectionRecordAggregated>();
+                establishmentRecommendations.Unrecommended = new List<InspectionRecordAggregated>();
+
+                foreach (string establishment in recommendationsModel?.Recommended ?? Enumerable.Empty<string>())
                 {
-                    await UploadRecommendationsBlobAsync(chatResultJSON);
+                    InspectionRecordAggregated? record = cosmosDbDocs.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
+
+                    if (record != null)
+                    {
+                        establishmentRecommendations.Recommended.Add(record);
+                    }
+                }
+
+                foreach (string establishment in recommendationsModel?.Unrecommended ?? Enumerable.Empty<string>())
+                {
+                    InspectionRecordAggregated? record = cosmosDbDocs.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
+
+                    if (record != null)
+                    {
+                        establishmentRecommendations.Unrecommended.Add(record);
+                    }
+                }
+
+                string serializedRecs = JsonSerializer.Serialize(establishmentRecommendations);
+
+                // Upload recommendations to Blob Storage
+                if (!string.IsNullOrEmpty(serializedRecs))
+                {
+                    await UploadRecommendationsBlobAsync(serializedRecs);
                 }
             }
             catch (Exception ex)
