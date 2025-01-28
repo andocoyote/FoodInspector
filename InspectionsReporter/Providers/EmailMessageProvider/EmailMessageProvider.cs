@@ -39,7 +39,7 @@ namespace InspectionsReporter.Providers.EmailMessageProvider
                     senderAddress: _sender,
                     content: new EmailContent(_subject)
                     {
-                        PlainText = messageBody
+                        Html = messageBody
                     },
                     recipients: new EmailRecipients(new List<EmailAddress> { new EmailAddress(_toEmail) }));
 
