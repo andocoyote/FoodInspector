@@ -1,12 +1,11 @@
 ﻿using Azure.Messaging.ServiceBus;
 using CommonFunctionality.CosmosDbProvider;
-using FoodInspector.InspectionDataGatherer;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
+using FoodInspector.Providers.InspectionDataGatherer;
 using FoodInspectorModels;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace FoodInspector
 {
@@ -14,7 +13,6 @@ namespace FoodInspector
     {
         // https://stackoverflow.com/questions/54155903/azure-webjob-read-appsettings-json-and-inject-configuration-to-timertrigger
         private readonly IConfiguration _configuration;
-        private readonly IOptions<CosmosDbOptions> _cosmosDbOptions;
         private readonly IInspectionDataGatherer _inspectionDataGatherer;
         private readonly ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> _cosmosDbProvider;
         private readonly IExistingInspectionsTableProvider _existingInspectionsTableProvider;
@@ -23,14 +21,12 @@ namespace FoodInspector
 
         public Functions(
             IConfiguration configuration,
-            IOptions<CosmosDbOptions> cosmosDbOptions,
             IInspectionDataGatherer inspectionDataGatherer,
             ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProviderFactory,
             IExistingInspectionsTableProvider existingInspectionsTableProvider,
             ServiceBusSender serviceBusSender)
         {
             _configuration = configuration;
-            _cosmosDbOptions = cosmosDbOptions;
             _inspectionDataGatherer = inspectionDataGatherer;
             _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _existingInspectionsTableProvider = existingInspectionsTableProvider;

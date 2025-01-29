@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace FoodInspector.InspectionDataGatherer
+namespace FoodInspector.Providers.InspectionDataGatherer
 {
     public class InspectionDataGatherer : IInspectionDataGatherer
     {

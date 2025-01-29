@@ -1,6 +1,6 @@
 ﻿using FoodInspectorModels;
 
-namespace FoodInspector.InspectionDataGatherer
+namespace FoodInspector.Providers.InspectionDataGatherer
 {
     public interface IInspectionDataGatherer
     {

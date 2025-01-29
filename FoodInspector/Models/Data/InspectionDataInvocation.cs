@@ -1,4 +1,4 @@
-﻿namespace HttpClientTest.Model
+﻿namespace FoodInspector.Models.Data
 {
     // Enumerates the fields used to search the inspections API
     // [DataContract]

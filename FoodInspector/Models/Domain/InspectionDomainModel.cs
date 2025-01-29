@@ -1,6 +1,6 @@
 ﻿using EventStore.Domain;
 
-namespace FoodInspector.DomainModels
+namespace FoodInspector.Models.Domain
 {
     public class InspectionDomainModel : IDomainModel
     {
