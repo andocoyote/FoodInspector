@@ -4,7 +4,6 @@ using InspectionsReporter.Providers.EmailMessageProvider;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
-using System.Text.Json.Nodes;
 
 // https://learn.microsoft.com/en-us/azure/azure-functions/functions-event-grid-blob-trigger?pivots=programming-language-csharp
 
@@ -32,12 +31,27 @@ namespace InspectionsReporter
 
             EstablishmentRecommendations? recommendations = JsonSerializer.Deserialize<EstablishmentRecommendations>(content);
 
-            string htmlTable = EmailFormatProvider.GenerateHtmlTable(recommendations);
+            if (recommendations == null ||
+                recommendations.Recommended == null ||
+                recommendations.Unrecommended == null)
+            {
+                _logger.LogError("[InspectionsReporter] Failed to retrieve recommendations from Blob Storage trigger.");
+            }
+            else
+            {
+                string? htmlTable = EmailFormatProvider.GenerateHtmlTable(recommendations);
 
-            _logger.LogInformation($"[InspectionsReporter] Sending email containing recommendations.");
-            await _emailMessageProvider.SendEmailAsync(htmlTable);
+                if (string.IsNullOrEmpty(htmlTable))
+                {
+                    _logger.LogError("[InspectionsReporter] HTML table for Email message body is null or empty");
+                    return;
+                }
 
-            _logger.LogInformation($"[InspectionsReporter] Email containing recommendations sent.");
+                _logger.LogInformation($"[InspectionsReporter] Sending email containing recommendations.");
+                await _emailMessageProvider.SendEmailAsync(htmlTable);
+
+                _logger.LogInformation($"[InspectionsReporter] Email containing recommendations sent.");
+            }
         }
     }
 }

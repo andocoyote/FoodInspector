@@ -5,8 +5,6 @@ using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.StorageAccount;
 using FoodInspector.Configuration;
 using FoodInspector.InspectionDataGatherer;
-using FoodInspector.Providers.EstablishmentsProvider;
-using FoodInspector.Providers.EstablishmentsTableProvider;
 using FoodInspector.Providers.ExistingInspectionsTableProvider;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -62,9 +60,7 @@ namespace FoodInspector
                 AddOptions(services, hostContext.Configuration);
 
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
-                services.AddSingleton<IEstablishmentsTableProvider, Providers.EstablishmentsTableProvider.ExistingInspectionsTableProvider>();
                 services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer.InspectionDataGatherer>();
-                services.AddSingleton<IEstablishmentsProvider, EstablishmentsProvider>();
                 services.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
                 services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
 

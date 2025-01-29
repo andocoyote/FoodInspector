@@ -5,8 +5,15 @@ namespace InspectionsReporter.Providers.EmailFormatProvider
 {
     public static class EmailFormatProvider
     {
-        public static string GenerateHtmlTable(EstablishmentRecommendations recommendations)
+        public static string? GenerateHtmlTable(EstablishmentRecommendations recommendations)
         {
+            if (recommendations == null ||
+                recommendations.Recommended == null ||
+                recommendations.Unrecommended == null)
+            {
+                return null;
+            }
+
             var sb = new StringBuilder();
             sb.Append("<html><body>");
 

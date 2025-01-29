@@ -46,8 +46,6 @@ namespace FoodInspector
 
             try
             {
-                DisplayConfiguration();
-
                 // Query the food inspections API for the latest data
                 List<InspectionRecordAggregated> inspectionRecordAggregatedList = await _inspectionDataGatherer.QueryAllInspections();
 
@@ -71,22 +69,6 @@ namespace FoodInspector
             }
 
             _logger.LogInformation("[ProcessMessageOnTimer] Processing completed.");
-        }
-
-        private void DisplayConfiguration()
-        {
-            _logger.LogInformation($"[ProcessMessageOnTimer] Printing App Settings via IOptions classes:");
-            _logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.AccountEndpoint = {_cosmosDbOptions.Value.AccountEndpoint}");
-            _logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.Database = {_cosmosDbOptions.Value.Database}");
-            _logger.LogInformation($"[ProcessMessageOnTimer] _cosmosDbOptions.Value.Containers.InspectionData = {_cosmosDbOptions.Value.Containers.InspectionData}");
-
-            _logger.LogInformation($"[ProcessMessageOnTimer] Printing App Settings via environment variables:");
-            _logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: ASPNETCORE_ENVIRONMENT = {Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}");
-
-            _logger.LogInformation($"[ProcessMessageOnTimer] Printing App Settings via ConfigurationManager:");
-            _logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: CosmosDb:Containers:InspectionData = {_configuration.GetValue<string>("CosmosDb:Containers:InspectionData")}");
-            _logger.LogInformation($"[ProcessMessageOnTimer] AppSetting: ASPNETCORE_ENVIRONMENT = {_configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT")}");
-
         }
 
         private async Task SaveInspectionsToStorageTableAsync(List<InspectionRecordAggregated> inspectionRecordAggregatedList)

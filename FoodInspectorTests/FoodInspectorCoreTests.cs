@@ -1,6 +1,5 @@
 using CommonFunctionality.CosmosDbProvider;
 using FoodInspector.DependencyInjection;
-using FoodInspector.Providers.EstablishmentsProvider;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +58,7 @@ namespace FoodInspectorTests
         }
         */
 
+        /*
         [TestMethod]
         public void ReadEstablishmentsFile()
         {
@@ -83,6 +83,7 @@ namespace FoodInspectorTests
                 Console.WriteLine($"[ReadEstablishmentsFile] An exception was caught: {ex}");
             }
         }
+        */
 
         /*
         [TestMethod]
