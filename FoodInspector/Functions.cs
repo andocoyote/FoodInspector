@@ -33,38 +33,38 @@ namespace FoodInspector
             _serviceBusSender = serviceBusSender;
         }
 
-        public async Task ProcessMessageOnTimer(
+        public async Task LatestInspectionsGatherer(
             [TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo timerInfo,
             ILogger logger)
         {
             _logger = logger;
-            _logger.LogInformation("[ProcessMessageOnTimer] TimerTrigger fired.");
+            _logger.LogInformation("[LatestInspectionsGatherer] TimerTrigger fired.");
 
             try
             {
                 // Query the food inspections API for the latest data
                 List<InspectionRecordAggregated> inspectionRecordAggregatedList = await _inspectionDataGatherer.QueryAllInspections();
 
-                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList count: {(inspectionRecordAggregatedList?.Count ?? -1)}.");
+                _logger.LogInformation($"[LatestInspectionsGatherer] inspectionRecordAggregatedList count: {(inspectionRecordAggregatedList?.Count ?? -1)}.");
 
                 await SaveInspectionsToStorageTableAsync(inspectionRecordAggregatedList);
 
-                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Storage.");
+                _logger.LogInformation($"[LatestInspectionsGatherer] inspectionRecordAggregatedList saved to Azure Storage.");
 
                 await SaveInspectionsToCosmosDbAsync(inspectionRecordAggregatedList);
 
-                _logger.LogInformation($"[ProcessMessageOnTimer] inspectionRecordAggregatedList saved to Azure Cosmos DB.");
+                _logger.LogInformation($"[LatestInspectionsGatherer] inspectionRecordAggregatedList saved to Azure Cosmos DB.");
 
                 await SendServicBusMessageAsync("New aggregated inspections arrived");
 
-                _logger.LogInformation($"[ProcessMessageOnTimer] message sent to Service Bus Queue.");
+                _logger.LogInformation($"[LatestInspectionsGatherer] message sent to Service Bus Queue.");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"[ProcessMessageOnTimer] An exception was caught. Exception: {ex}");
+                _logger.LogError($"[LatestInspectionsGatherer] An exception was caught. Exception: {ex}");
             }
 
-            _logger.LogInformation("[ProcessMessageOnTimer] Processing completed.");
+            _logger.LogInformation("[LatestInspectionsGatherer] Processing completed.");
         }
 
         private async Task SaveInspectionsToStorageTableAsync(List<InspectionRecordAggregated> inspectionRecordAggregatedList)

@@ -1,6 +1,5 @@
 ﻿using Azure.Identity;
 using Azure.Messaging.ServiceBus;
-using CommonFunctionality.AppToken;
 using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.StorageAccount;
 using FoodInspector.Configuration;
@@ -116,8 +115,6 @@ namespace FoodInspector
                 configRoot.GetSection("KeyVault"));
             services.Configure<StorageAccountOptions>(
                 configRoot.GetSection("Storage"));
-            services.Configure<AppTokenOptions>(
-                configRoot.GetSection("AppToken"));
         }
     }
 }
