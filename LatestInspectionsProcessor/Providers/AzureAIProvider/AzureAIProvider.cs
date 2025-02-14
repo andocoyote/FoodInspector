@@ -48,9 +48,7 @@ namespace LatestInspectionsProcessor.Providers.AzureAIProvider
             _logger.LogInformation(systemMessage);
 
             // Get the JSON schema for results from Blob Storage
-            // Download the blob content to a stream
             blobClient = containerClient.GetBlobClient(_jsonSchemaFileName);
-            string jsonSchema = string.Empty;
 
             using MemoryStream jsonSchemaStream = new MemoryStream();
             await blobClient.DownloadToAsync(jsonSchemaStream);
@@ -58,7 +56,7 @@ namespace LatestInspectionsProcessor.Providers.AzureAIProvider
             // Convert the stream to a string
             jsonSchemaStream.Position = 0;
             using StreamReader reader = new StreamReader(jsonSchemaStream);
-            jsonSchema = await reader.ReadToEndAsync();
+            string jsonSchema = await reader.ReadToEndAsync();
 
             _logger.LogInformation("[ProcessInspectionResults] JSON schema:");
             _logger.LogInformation(jsonSchema);

@@ -71,7 +71,7 @@ namespace FoodInspector.Providers.ExistingInspectionsTableProvider
         /// <summary>
         /// Query Azure Storage Table for records from the specific inspection
         /// </summary>
-        //// <param name="inspectionSerialNum">The serial number of the inspection</param>
+        /// <param name="inspectionSerialNum">The serial number of the inspection</param>
         /// <param name="inspectionId">The ID for the specific entry in the inspection</param>
         /// <returns></returns>
         public async Task<List<ExistingInspectionModel>> QueryInspectionRecord(string inspectionSerialNum, string inspectionId)

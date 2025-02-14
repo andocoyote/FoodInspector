@@ -6,6 +6,7 @@ using FoodInspectorModels;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace FoodInspector
 {
@@ -34,7 +35,7 @@ namespace FoodInspector
         }
 
         public async Task LatestInspectionsGatherer(
-            [TimerTrigger("0 */5 * * * *", RunOnStartup = true)] TimerInfo timerInfo,
+            [TimerTrigger("0 0 22 * * Fri", RunOnStartup = true)] TimerInfo timerInfo,
             ILogger logger)
         {
             _logger = logger;
@@ -55,7 +56,7 @@ namespace FoodInspector
 
                 _logger.LogInformation($"[LatestInspectionsGatherer] inspectionRecordAggregatedList saved to Azure Cosmos DB.");
 
-                await SendServicBusMessageAsync("New aggregated inspections arrived");
+                await SendServicBusMessageAsync(inspectionRecordAggregatedList);
 
                 _logger.LogInformation($"[LatestInspectionsGatherer] message sent to Service Bus Queue.");
             }
@@ -127,8 +128,10 @@ namespace FoodInspector
             }
         }
 
-        private async Task SendServicBusMessageAsync(string message)
+        private async Task SendServicBusMessageAsync(List<InspectionRecordAggregated> inspectionRecordAggregatedList)
         {
+            string message = JsonSerializer.Serialize(inspectionRecordAggregatedList);
+
             var serviceBusMessage = new ServiceBusMessage(message);
             await _serviceBusSender.SendMessageAsync(serviceBusMessage);
         }

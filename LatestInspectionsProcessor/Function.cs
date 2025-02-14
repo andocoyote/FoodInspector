@@ -1,12 +1,9 @@
 using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using CommonFunctionality.CosmosDbProvider;
 using FoodInspectorModels;
 using LatestInspectionsProcessor.Models;
 using LatestInspectionsProcessor.Providers.AzureAIProvider;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using System.Linq.Expressions;
 using System.Text;
 using System.Text.Json;
 
@@ -14,7 +11,6 @@ namespace LatestInspectionsProcessor
 {
     public class Function
     {
-        private readonly ICosmosDbProvider<CosmosDbWriteDocument, CosmosDbReadDocument> _cosmosDbProvider;
         private readonly BlobServiceClient _blobServiceClient;
         private readonly IAzureAIProvider _azureAIProvider;
         private readonly ILogger<Function> _logger;
@@ -23,12 +19,10 @@ namespace LatestInspectionsProcessor
         private string containerName = "latest-inspections";
 
         public Function(
-            ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument> cosmosDbProviderFactory,
             BlobServiceClient blobServiceClient,
             IAzureAIProvider azureAIProvider,
             ILogger<Function> logger)
         {
-            _cosmosDbProvider = cosmosDbProviderFactory.CreateProvider();
             _blobServiceClient = blobServiceClient;
             _azureAIProvider = azureAIProvider;
             _logger = logger;
@@ -39,21 +33,24 @@ namespace LatestInspectionsProcessor
         [Function(nameof(Function))]
         public async Task Run(
             [ServiceBusTrigger("inspectionrecordsaggregatedqueue", Connection = "ServiceBusConnection")]
-            string myQueueItem)
+            string inspectionsQueueItem)
         {
-            _logger.LogInformation("[LatestInspectionsProcessor] Message Body: {body}", myQueueItem);
+            _logger.LogInformation($"[LatestInspectionsProcessor] Message Body: {inspectionsQueueItem}");
 
             try
             {
+                List<InspectionRecordAggregated>? inspectionRecordAggregatedList = 
+                    JsonSerializer.Deserialize<List<InspectionRecordAggregated>>(inspectionsQueueItem);
 
-                // Get latest inspection documents from Cosmos DB for all establishments
-                List<CosmosDbReadDocument> cosmosDbDocs = await _cosmosDbProvider.QueryLatestInspectionRecordsAsync();
-
-                _logger.LogInformation($"[LatestInspectionsProcessor] Retrieved {cosmosDbDocs.Count} documents from Cosmos DB.");
+                if (inspectionRecordAggregatedList == null)
+                {
+                    _logger.LogError("[LatestInspectionsProcessor] Inspection data from Service Bus is null.");
+                    return;
+                }
 
                 // Only send the minimum info required for ChatGPT to make recommendations
                 List<InspectionRecordOpenAIRequestModel> inspectionRecordOpenAIRequestModels =
-                        cosmosDbDocs.Select(i => new InspectionRecordOpenAIRequestModel()
+                        inspectionRecordAggregatedList.Select(i => new InspectionRecordOpenAIRequestModel()
                         {
                             ProgramIdentifier = i.ProgramIdentifier,
                             InspectionScore = i.InspectionScore,
@@ -79,7 +76,7 @@ namespace LatestInspectionsProcessor
 
                 foreach (string establishment in recommendationsModel?.Recommended ?? Enumerable.Empty<string>())
                 {
-                    InspectionRecordAggregated? record = cosmosDbDocs.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
+                    InspectionRecordAggregated? record = inspectionRecordAggregatedList.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
 
                     if (record != null)
                     {
@@ -89,7 +86,7 @@ namespace LatestInspectionsProcessor
 
                 foreach (string establishment in recommendationsModel?.Unrecommended ?? Enumerable.Empty<string>())
                 {
-                    InspectionRecordAggregated? record = cosmosDbDocs.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
+                    InspectionRecordAggregated? record = inspectionRecordAggregatedList.Where(doc => doc.ProgramIdentifier == establishment).FirstOrDefault();
 
                     if (record != null)
                     {
@@ -114,11 +111,6 @@ namespace LatestInspectionsProcessor
         private async Task UploadRecommendationsBlobAsync(string chatResultJSON)
         {
             BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
-
-            await foreach (BlobItem blob in containerClient.GetBlobsAsync())
-            {
-                _logger.LogInformation($"[LatestInspectionsProcessor] Found blob {blob.Name}.");
-            }
 
             // Convert JSON string to a stream and upload it to Blob Storage
             using MemoryStream memoryStream = new MemoryStream(Encoding.UTF8.GetBytes(chatResultJSON));

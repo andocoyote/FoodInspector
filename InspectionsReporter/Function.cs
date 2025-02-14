@@ -39,6 +39,7 @@ namespace InspectionsReporter
             }
             else
             {
+                // Format the recommendations/unrecommendations into a pretty HTML table
                 string? htmlTable = EmailFormatProvider.GenerateHtmlTable(recommendations);
 
                 if (string.IsNullOrEmpty(htmlTable))
@@ -47,6 +48,7 @@ namespace InspectionsReporter
                     return;
                 }
 
+                // Send the recommendations email
                 _logger.LogInformation($"[InspectionsReporter] Sending email containing recommendations.");
                 await _emailMessageProvider.SendEmailAsync(htmlTable);
 
