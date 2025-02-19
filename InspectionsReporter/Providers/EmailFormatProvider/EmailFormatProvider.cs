@@ -15,12 +15,20 @@ namespace InspectionsReporter.Providers.EmailFormatProvider
             }
 
             var sb = new StringBuilder();
-            sb.Append("<html><body>");
+            sb.Append("<html><head>");
+            sb.Append("<style>");
+            sb.Append("h2.recommended { background-color: green; color: white; padding: 10px; }");
+            sb.Append("h2.unrecommended { background-color: red; color: white; padding: 10px; }");
+            sb.Append("table { border-collapse: collapse; width: 100%; text-align: left; }");
+            sb.Append("th, td { border: 1px solid black; padding: 8px; }");
+            sb.Append("th { background-color: #f2f2f2; }");
+            sb.Append("</style>");
+            sb.Append("</head><body>");
 
-            sb.Append("<h2>Recommended</h2>");
+            sb.Append("<h2 class='recommended'>Recommended</h2>");
             sb.Append(GenerateTable(recommendations.Recommended));
 
-            sb.Append("<h2>Unrecommended</h2>");
+            sb.Append("<h2 class='unrecommended'>Unrecommended</h2>");
             sb.Append(GenerateTable(recommendations.Unrecommended));
 
             sb.Append("</body></html>");
@@ -35,8 +43,8 @@ namespace InspectionsReporter.Providers.EmailFormatProvider
             var sb = new StringBuilder();
             sb.Append("<table border='1' style='border-collapse:collapse; width:100%; text-align:left;'>");
             sb.Append("<tr>");
-            sb.Append("<th>Program Identifier</th><th>Name</th><th>Inspection Date</th><th>Description</th>");
-            sb.Append("<th>Address</th><th>City</th><th>Zip Code</th><th>Inspection Type</th>");
+            sb.Append("<th>Program Identifier</th><th>Inspection Date</th>");
+            sb.Append("<th>Address</th><th>City</th><th>Inspection Type</th>");
             sb.Append("<th>Score</th><th>Result</th><th>Violations</th>");
             sb.Append("</tr>");
 
@@ -44,12 +52,9 @@ namespace InspectionsReporter.Providers.EmailFormatProvider
             {
                 sb.Append("<tr>");
                 sb.Append($"<td>{inspection.ProgramIdentifier}</td>");
-                sb.Append($"<td>{inspection.Name}</td>");
                 sb.Append($"<td>{inspection.InspectionDate.ToString()}</td>");
-                sb.Append($"<td>{inspection.Description}</td>");
                 sb.Append($"<td>{inspection.Address}</td>");
                 sb.Append($"<td>{inspection.City}</td>");
-                sb.Append($"<td>{inspection.ZipCode}</td>");
                 sb.Append($"<td>{inspection.InspectionType}</td>");
                 sb.Append($"<td>{inspection.InspectionScore}</td>");
                 sb.Append($"<td>{inspection.InspectionResult}</td>");
