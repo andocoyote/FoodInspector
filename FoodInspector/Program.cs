@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Azure.Core;
+using Azure.Identity;
 using Azure.Messaging.ServiceBus;
 using CommonFunctionality.CosmosDbProvider;
 using CommonFunctionality.StorageAccount;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
 
 // Creating WebJobs that target .NET
 // https://learn.microsoft.com/en-us/azure/app-service/webjobs-sdk-get-started
@@ -59,14 +61,45 @@ namespace FoodInspector
                 AddOptions(services, hostContext.Configuration);
 
                 services.AddSingleton<ILoggerFactory, LoggerFactory>();
-                services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer>();
                 services.AddSingleton<ICosmosDbProviderFactory<CosmosDbWriteDocument, CosmosDbReadDocument>, InspectionDataCosmosDbProviderFactory>();
-                services.AddSingleton<IExistingInspectionsTableProvider, Providers.ExistingInspectionsTableProvider.ExistingInspectionsTableProvider>();
+                services.AddSingleton<IExistingInspectionsTableProvider, ExistingInspectionsTableProvider>();
 
-                services.AddHttpClient("InspectionDataGatherer", c => c.BaseAddress = new System.Uri(foodInspectorApiUri));
+                // Register HttpClient with DI, pre-configured for Easy Auth using Workflow Identity Federation
+                // https://learn.microsoft.com/en-us/entra/workload-id/workload-identity-federation-config-app-trust-managed-identity?tabs=microsoft-entra-admin-center%2Cdotnet
+                // https://learn.microsoft.com/en-us/azure/app-service/configure-authentication-provider-aad?tabs=workforce-configuration
+                var tokenExhangeScope = hostContext.Configuration["FoodInspectorApi:TokenExchangeScope"];
+                var apiTenantId = hostContext.Configuration["Api:TenantId"];
+                var managedIdentityClientId = hostContext.Configuration["Api:ManagedIdentityClientId"];
+                var appRegistrationClientId = hostContext.Configuration["Api:AppRegistrationClientId"];
+                var apiScope = hostContext.Configuration["Api:ApiScope"];
 
-                string serviceBusNamespace = "sb-food-inspector.servicebus.windows.net";
-                string queueName = "inspectionrecordsaggregatedqueue";
+                services.AddHttpClient("InspectionDataGatherer", client =>
+                {
+                    var baseUrl = foodInspectorApiUri;
+                    if (string.IsNullOrEmpty(baseUrl))
+                        throw new InvalidOperationException("foodInspectorApiUri not configured.");
+
+                    client.BaseAddress = new Uri(baseUrl);
+                })
+                .AddHttpMessageHandler(sp =>
+                {
+                    ManagedIdentityCredential miCredential = new (
+                        ManagedIdentityId.FromUserAssignedClientId(managedIdentityClientId));
+
+                    return new AuthHeaderHandler(
+                        miCredential,
+                        tokenExhangeScope,
+                        apiTenantId,
+                        appRegistrationClientId,
+                        apiScope
+                    );
+                });
+
+                // Register your services that use the named HttpClient
+                services.AddSingleton<IInspectionDataGatherer, InspectionDataGatherer>();
+
+                string serviceBusNamespace = hostContext.Configuration["ServiceBus:ServiceBusNamespace"];
+                string queueName = hostContext.Configuration["ServiceBus:QueueName"];
 
                 // Register the Service Bus Client
                 services.AddSingleton(serviceProvider =>
@@ -85,11 +118,15 @@ namespace FoodInspector
             });
 
             // The AddConsole method adds console logging to the configuration
-            builder.ConfigureLogging((context, b) =>
+            builder.ConfigureLogging((context, loggingBuilder) =>
             {
-                b.SetMinimumLevel(LogLevel.Information);
-                b.AddConsole();
-                b.AddApplicationInsightsWebJobs(o => { o.ConnectionString = configurationManager.GetConnectionString("AzureWebJobsDashboard"); });
+                loggingBuilder.SetMinimumLevel(LogLevel.Information);
+                loggingBuilder.AddConsole();
+                loggingBuilder.AddApplicationInsightsWebJobs(o => { o.ConnectionString = configurationManager.GetConnectionString("AzureWebJobsDashboard"); });
+                loggingBuilder.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning); // Suppress HttpClient info logs
+                loggingBuilder.AddFilter("Azure.Core", LogLevel.Warning); // Suppress Azure SDK info logs
+                loggingBuilder.AddFilter("Azure.Identity", LogLevel.Warning);
+                loggingBuilder.AddFilter("Azure.Storage", LogLevel.Warning);
             });
 
             IHost host = builder.Build();
@@ -115,6 +152,55 @@ namespace FoodInspector
                 configRoot.GetSection("KeyVault"));
             services.Configure<StorageAccountOptions>(
                 configRoot.GetSection("Storage"));
+            services.Configure<ApiOptions>(
+                configRoot.GetSection("Api"));
         }
+
+        // Custom DelegatingHandler to attach Bearer token
+        public class AuthHeaderHandler : DelegatingHandler
+        {
+            private readonly TokenCredential _credential;
+            private readonly string _tokenExhangeScope;
+            private readonly string _apiTenantId;
+            private readonly string _appRegistrationClientId;
+            private readonly string _apiScope;
+
+            public AuthHeaderHandler(
+                TokenCredential credential,
+                string tokenExhangeScope,
+                string apiTenantId,
+                string appRegistrationClientId,
+                string apiScope)
+            {
+                _credential = credential ?? throw new ArgumentNullException(nameof(credential));
+                _tokenExhangeScope = tokenExhangeScope ?? throw new ArgumentNullException(nameof(tokenExhangeScope));
+                _apiTenantId = apiTenantId ?? throw new ArgumentNullException(nameof(_apiTenantId));
+                _appRegistrationClientId = appRegistrationClientId ?? throw new ArgumentNullException(nameof(appRegistrationClientId));
+                _apiScope = apiScope ?? throw new ArgumentNullException(nameof(apiScope));
+            }
+
+            // Uses Workflow Identity Federation to call the FoodInspectorAPIs:
+            //  1. Get the Managed Identity token
+            //  2. Exchange that token for an Azure resource token
+            protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+            {
+                TokenRequestContext tokenRequestContext = new([_tokenExhangeScope]);
+                ClientAssertionCredential clientAssertionCredential = new(
+                    _apiTenantId,
+                    _appRegistrationClientId,
+                    async _ =>
+                        (await _credential
+                            .GetTokenAsync(tokenRequestContext, cancellationToken)
+                            .ConfigureAwait(false)).Token
+                );
+
+                TokenRequestContext tokenRequestContext2 = new([_apiScope]);
+                var token = clientAssertionCredential.GetToken(tokenRequestContext2, cancellationToken);
+
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+                return await base.SendAsync(request, cancellationToken);
+            }
+        }
+
     }
 }

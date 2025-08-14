@@ -28,7 +28,7 @@ namespace FoodInspector.Providers.InspectionDataGatherer
             string results = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
 
             var jsonResponse = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"{jsonResponse}\n");
+            _logger.LogInformation($"[InspectionDataGatherer] Response from AllEstablishmentsLatestInspectionsAggregated: {jsonResponse}\n");
 
             inspectionRecordAggregated = JsonConvert.DeserializeObject<List<InspectionRecordAggregated>>(results, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, SerializationBinder = new DefaultSerializationBinder() });
 
