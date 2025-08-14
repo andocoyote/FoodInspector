@@ -27,7 +27,7 @@ if (!string.IsNullOrEmpty(keyVaultName))
 }
 
 // Bind the configuration to a strongly typed class
-builder.Services.Configure<EmailMessageOptions>(builder.Configuration.GetSection("EmailMessage"));
+builder.Services.Configure<EmailMessageOptions>(builder.Configuration.GetRequiredSection("EmailMessage"));
 
 builder.Services.AddSingleton<IEmailMessageProvider, EmailMessageProvider>();
 
